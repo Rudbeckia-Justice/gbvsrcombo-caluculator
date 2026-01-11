@@ -562,7 +562,7 @@ document
     }
 
     try {
-      const res = await fetch(`./data/${id}.csv`);
+      const res = await fetch(`./csv/${id}.csv`);
       if (!res.ok) throw new Error("not found");
 
       const text = await res.text();
