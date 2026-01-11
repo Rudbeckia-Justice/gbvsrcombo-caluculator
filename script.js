@@ -112,7 +112,32 @@ document.getElementById("characterInput").addEventListener("change", async (e) =
   const id = charMap[name];
   if (!id) return;
 
-  moves = {}; // 技表リセット
+  moves = {
+  "RS": {
+  min: { "": 0.2 },
+  dmg: { "": 1500 },
+  scale: { "": 1 },
+  cmd: false
+},
+"RC": {
+  min: { "": 0.2 },
+  dmg: { "": 1000 },
+  scale: { "": 1 },
+ cmd: false
+},
+"DA": {
+  min: { "": 0.2 },
+  dmg: { "": 700 },
+  scale: { "": 1 },
+  cmd: false
+},
+"TA": {
+  min: { "": 0.2 },
+  dmg: { "": 1000 },
+  scale: { "": 1 },
+  cmd: false
+}
+}; // 技表リセット
 
   const res = await fetch(`csv/${id}.csv`);
   const text = await res.text();
