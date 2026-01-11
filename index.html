@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>コンボダメージ計算機</title>
+</head>
+<link rel="stylesheet" href="style.css">
+<body>
+  <div class="container">
+    <!-- 左：計算機 -->
+    <div class="calculator">
+      <h2>コンボダメージ計算機</h2>
+      <input type="file" id="csvInput" accept=".csv">
+      <input id="combo" type="text" placeholder="例：!236U*" />
+      <button onclick="calc()">計算</button>
+      <div class="dresult" id="result"></div>
+     <label class="check">
+  <input type="checkbox" id="forceTech">
+  <span class="quick">クイック入力のみ</span>
+</label>
+<label class="check2">
+  <input type="checkbox" id="search" onchange="toggleStarterInput()">
+  <span>始動別ダメージまとめ</span>
+</label><br>
+<div id="bpGroup">
+ BP<input type="checkbox" data-i="0" checked class="BP" onchange="bpChanged(this)">
+ <input type="checkbox" data-i="1" checked class="BP" onchange="bpChanged(this)">
+ <input type="checkbox" data-i="2" checked class="BP" onchange="bpChanged(this)">
+</div>
+
+<div id="starterBox" style="display:none; margin-top:8px;">
+  <textarea id="startersInput" rows="6" style="width:320px;">
+cH
+cHH
+cHHH
+dL>cMMM
+  </textarea>
+  <div style="font-size:12px; color:#666;">
+    ※ 1行＝1始動（例：cH / dl&gt;cmmm）
+  </div>
+</div>
+
+    </div>
+
+    <!-- 右：説明 -->
+    <div class="description" id="description">
+      <h3>入力ルール</h3>
+      <p>
+        ・<b>*</b>（テクニカル）<br>
+        　最終ダメージが <b>1.1倍</b>かつノーキャン判定<br><br>
+
+        ・<b>^</b>（クイックかつノーキャン）<br>
+        　最終ダメージが <b>1倍</b>かつノーキャン判定<br><br>
+
+        ・<b>!</b>（クールタイム）<br>
+        　U技のみ <b>0.5倍</b><br><br>
+
+        ・順番は自由<br>
+        　<code>!236U*</code> / <code>*236U!</code> どちらもOK<br><br>
+
+        ・全角記号（＊、！）も使用可能<br>
+        多段技のヒット数指定も可能<br>
+        214h[2]	2段目のみ<br>
+        214h[2-3]	2〜3段目<br>
+        214h[-2]	後ろから2段<br>
+        214h[2,4]2段目と4段目
+      </p>
+      <pre id="csvPreview"></pre>
+    </div>
+  </div>
+  <script src="script.js"></script>
+  <input list="characterList" id="characterInput" placeholder="キャラ名を入力">
+<datalist id="characterList">
+  <option value="ヴィーラ" data-id="vira"></option>
+  <option value="ゾーイ" data-id="zooey"></option>
+  <option value="グリームニエル" data-id="grimnir"></option>
+</datalist>
+
+</body>
+</html>
