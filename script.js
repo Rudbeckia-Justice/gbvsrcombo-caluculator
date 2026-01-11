@@ -417,30 +417,36 @@ function calcDamage(comboText) {
 }
 
 function getMoveNameList(movesObj) {
-  const names = [];
+  const list = [];
 
   for (const base in movesObj) {
     const data = movesObj[base];
-
-    // 強度（L/M/H/U など）
     const strengths = Object.keys(data.dmg || {});
 
-    if (strengths.length === 0 || (strengths.length === 1 && strengths[0] === "")) {
-      // 強度なし技
-      names.push(base);
-    } else {
+    // 強度なし
+    if (
+      strengths.length === 0 ||
+      (strengths.length === 1 && strengths[0] === "")
+    ) {
+      list.push([
+        base,
+        data.desc?.[""] ?? ""
+      ]);
+    }
+    // 強度あり
+    else {
       for (const s of strengths) {
-        if (s === "") {
-          names.push(base);
-        } else {
-          names.push(base + s);
-        }
+        list.push([
+          s === "" ? base : base + s,
+          data.desc?.[s] ?? data.desc?.[""] ?? ""
+        ]);
       }
     }
   }
 
-  return names;
+  return list;
 }
+
 
 
 function loadMovesFromCSV(text) {
@@ -535,7 +541,11 @@ const descVariants = descStr
 
 
   document.getElementById("csvPreview").textContent =
-    JSON.stringify(getMoveNameList(moves), null, 2);
+  getMoveNameList(moves)
+    .map(([name, desc]) =>
+      desc ? `${name} ： ${desc}` : name
+    )
+    .join("\n");
 
   alert("技表を読み込みました！");
 }

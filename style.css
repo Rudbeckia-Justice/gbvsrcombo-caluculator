@@ -42,6 +42,9 @@ input[type="text"] {
   border-radius: 8px;
   text-align: left;
 }
+.preview{
+  white-space: pre-wrap;        /* 折り返す */
+}
 .dresult {
   text-align: left;
 }
