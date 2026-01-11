@@ -114,7 +114,7 @@ document.getElementById("characterInput").addEventListener("change", async (e) =
 
   moves = {}; // 技表リセット
 
-  const res = await fetch(`https://Rudbeckia-Justice.github.io/csv/${id}.csv`);
+  const res = await fetch(`csv/${id}.csv`);
   const text = await res.text();
   loadMovesFromCSV(text);
 
