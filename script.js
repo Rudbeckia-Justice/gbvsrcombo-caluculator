@@ -55,6 +55,34 @@ function bpChanged(cb) {
     // ======================
     // 技データ
     // ======================
+   
+    const commonMoves = {
+  RS: {
+    min: { "": 0.2 },
+    dmg: { "": 1500 },
+    scale: { "": 1 },
+    cmd: false
+  },
+  RC: {
+    min: { "": 0.2 },
+    dmg: { "": 1000 },
+    scale: { "": 1 },
+    cmd: false
+  },
+  DA: {
+    min: { "": 0.2 },
+    dmg: { "": 700 },
+    scale: { "": 1 },
+    cmd: false
+  },
+  TA: {
+    min: { "": 0.2 },
+    dmg: { "": 1000 },
+    scale: { "": 1 },
+    cmd: false
+  }
+};
+
     let moves = {
       "C": {
         min: 0.2,
@@ -63,7 +91,7 @@ function bpChanged(cb) {
         cmd: false
       },
       "236": {
-        min: 0.2,
+        min: { "": 0.2 },
         dmg: { L: [300,300,300], M: 1200, H: 1400 },
         scale: { L: 1.0, M: 1.0, H: 1.0 },
         cmd: true
@@ -74,30 +102,7 @@ function bpChanged(cb) {
         scale: { L: 1.0, M: 1.0, H: 1.0 },
         cmd: true
       },
-      "RS": {
-  min: { "": 0.2 },
-  dmg: { "": 1500 },
-  scale: { "": 1 },
-  cmd: false
-},
-"RC": {
-  min: { "": 0.2 },
-  dmg: { "": 1000 },
-  scale: { "": 1 },
- cmd: false
-},
-"DA": {
-  min: { "": 0.2 },
-  dmg: { "": 700 },
-  scale: { "": 1 },
-  cmd: false
-},
-"TA": {
-  min: { "": 0.2 },
-  dmg: { "": 1000 },
-  scale: { "": 1 },
-  cmd: false
-}
+ commonMoves
 };
 
     // ======================
@@ -340,7 +345,7 @@ function calcDamage(comboText) {
     BPn -= baseBP;
 
     // RC補正 
-    if (parsed.base === "RC" && hit <= 5){ 
+    if (parsed.base === "RC" && hit >= 2 && hit <= 5){ 
     hit = 5; }
 
     for (let i = 0; i < damages.length; i++) {
@@ -496,37 +501,15 @@ function loadMovesFromCSV(text) {
   }
 
 
-  let moves = {
-    "RS": {
-  min: { "": 0.2 },
-  dmg: { "": 1500 },
-  scale: { "": 1 },
-  cmd: false
-},
-"RC": {
-  min: { "": 0.2 },
-  dmg: { "": 1000 },
-  scale: { "": 1 },
- cmd: false
-},
-"DA": {
-  min: { "": 0.2 },
-  dmg: { "": 700 },
-  scale: { "": 1 },
-  cmd: false
-},
-"TA": {
-  min: { "": 0.2 },
-  dmg: { "": 1000 },
-  scale: { "": 1 },
-  cmd: false
-}
-  };
 
-  moves = newMoves;
+ moves = {
+  ...commonMoves,
+  ...newMoves
+};
+
 
   document.getElementById("csvPreview").textContent =
-    JSON.stringify(getMoveNameList(newMoves), null, 2);
+    JSON.stringify(getMoveNameList(moves), null, 2);
 
   alert("技表を読み込みました！");
 }
@@ -567,6 +550,9 @@ document
 
       const text = await res.text();
       loadMovesFromCSV(text); // ← 既に作ってある関数
+
+      input.value = "";       // ← 入力欄を空にする
+      input.focus(); 
 
       alert(`${name} を読み込みました`);
     } catch (e) {

@@ -7,9 +7,19 @@
 <link rel="stylesheet" href="style.css">
 <body>
   <div class="container">
+
     <!-- 左：計算機 -->
     <div class="calculator">
       <h2>コンボダメージ計算機</h2>
+      <div class="chara-select">
+      <input list="characterList" id="characterInput" placeholder="キャラ名を入力">
+      <datalist id="characterList">
+  <option value="ヴィーラ" data-id="vira"></option>
+  <option value="ゾーイ" data-id="zooey"></option>
+  <option value="グリームニエル" data-id="grimnir"></option>
+</datalist>
+<button id="loadCharBtn">決定</button>
+</div>
       <input type="file" id="csvInput" accept=".csv">
       <input id="combo" type="text" placeholder="例：!236U*" />
       <button onclick="calc()">計算</button>
@@ -68,17 +78,6 @@ dL>cMMM
       <pre id="csvPreview"></pre>
     </div>
   </div>
-  
-  <input list="characterList" id="characterInput" placeholder="キャラ名を入力">
-<datalist id="characterList">
-  <option value="ヴィーラ" data-id="vira"></option>
-  <option value="ゾーイ" data-id="zooey"></option>
-  <option value="グリームニエル" data-id="grimnir"></option>
-</datalist>
-
-<button id="loadCharBtn">決定</button>
-
 <script src="script.js"></script>
-
 </body>
 </html>
