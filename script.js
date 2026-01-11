@@ -234,16 +234,27 @@ function bpChanged(cb) {
     </tr>`;
 
   result.details.forEach((d, i) => {
-    html += `
-      <tr>
-        <td>${i + 1}</td>
-        <td>${d.move}</td>
-        <td>${d.hit}</td>
-        <td>${d.raw}</td>
-        <td>${Math.round(d.scale * 100)}%</td>
-        <td>${d.final}</td>
-      </tr>`;
-  });
+  const desc =
+    moves[d.base]?.desc?.[d.strength] ??
+    moves[d.base]?.desc?.[""] ??
+    "";
+
+  html += `
+    <tr>
+      <td>${i + 1}</td>
+      <td>
+        <b>${d.move}</b><br>
+        <span style="font-size:12px;color:#666;">
+          ${desc}
+        </span>
+      </td>
+      <td>${d.hit}</td>
+      <td>${d.raw}</td>
+      <td>${Math.round(d.scale * 100)}%</td>
+      <td>${d.final}</td>
+    </tr>`;
+});
+
 
   html += `
     <tr>
@@ -388,7 +399,9 @@ function calcDamage(comboText) {
         hit: hit,
         raw: d,
         scale,
-        final: finalDmg
+        final: finalDmg,
+        base: parsed.base,          // ← 追加
+  strength: parsed.strength,
       });
     }
     if (baseScale <= 0.7 && hit === 1){
@@ -441,7 +454,7 @@ function loadMovesFromCSV(text) {
   const newMoves = {};
 
   for (const line of lines) {
-    let [base, strengthStr, damageStr, minStr, scaleStr, BPStr, cmdStr] = line.split(",");
+    let [base, strengthStr, damageStr, minStr, scaleStr, BPStr, cmdStr, descStr] = line.split(",");
 
     base = base.trim().toUpperCase();
     strengthStr = strengthStr
@@ -454,7 +467,8 @@ function loadMovesFromCSV(text) {
         dmg: {},
         scale: {},
         BP: { "" : Number(BPStr) || 0 },
-    cmd: cmdStr?.trim().toLowerCase() === "c"
+    cmd: cmdStr?.trim().toLowerCase() === "c",
+          desc: {}
       };
     }
 
@@ -470,12 +484,24 @@ function loadMovesFromCSV(text) {
   ? minStr.split("|")
   : [];
 
+    
+const descVariants = descStr
+  ? descStr.split("|").map(s => s.trim())
+  : [];
+
+
 
     strengths.forEach((s, i) => {
       const dmgPart = damageVariants[i];
       const hits = dmgPart.includes("/")
         ? dmgPart.split("/").map(Number)
         : [Number(dmgPart)];
+        const desc =
+    descVariants[i] ??
+    descVariants[0] ??
+    "";
+
+  newMoves[base].desc[s] = desc;
 
       newMoves[base].dmg[s] = hits;
 
@@ -560,5 +586,6 @@ document
       console.error(e);
     }
   });
+
 
 
