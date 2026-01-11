@@ -55,7 +55,7 @@ function bpChanged(cb) {
     // ======================
     // 技データ
     // ======================
-    const moves = {
+    let moves = {
       "C": {
         min: 0.2,
         dmg: { L: 600, M: 1100, H: 1600 },
@@ -100,53 +100,6 @@ function bpChanged(cb) {
 }
 };
 
-//キャラ表検索
-const charMap = {
-  "ゾーイ": "zooey",
-  "ヴィーラ": "vira",
-  "グリームニエル": "grimnir"
-};
-
-document.getElementById("characterInput").addEventListener("change", async (e) => {
-  const name = e.target.value;
-  const id = charMap[name];
-  if (!id) return;
-
-  moves = {
-  "RS": {
-  min: { "": 0.2 },
-  dmg: { "": 1500 },
-  scale: { "": 1 },
-  cmd: false
-},
-"RC": {
-  min: { "": 0.2 },
-  dmg: { "": 1000 },
-  scale: { "": 1 },
- cmd: false
-},
-"DA": {
-  min: { "": 0.2 },
-  dmg: { "": 700 },
-  scale: { "": 1 },
-  cmd: false
-},
-"TA": {
-  min: { "": 0.2 },
-  dmg: { "": 1000 },
-  scale: { "": 1 },
-  cmd: false
-}
-}; // 技表リセット
-
-  const res = await fetch(`csv/${id}.csv`);
-  const text = await res.text();
-  loadMovesFromCSV(text);
-
-  console.log(`${name} の技表を読み込みました`);
-});
-
-
     // ======================
     // 補正計算
     // ======================
@@ -187,6 +140,7 @@ document.getElementById("characterInput").addEventListener("change", async (e) =
       repeat: lm[2].length,
       hitRange,        // ← 追加
       technical,
+      techBonus,
       onCooldown
     };
   }
@@ -197,6 +151,7 @@ document.getElementById("characterInput").addEventListener("change", async (e) =
       strength: "",
       hitRange,
       technical,
+      techBonus,
       onCooldown
     };
   }
@@ -493,7 +448,7 @@ function loadMovesFromCSV(text) {
         min: {},
         dmg: {},
         scale: {},
-        BP: { "" : BPStr },
+        BP: { "" : Number(BPStr) || 0 },
     cmd: cmdStr?.trim().toLowerCase() === "c"
       };
     }
@@ -540,7 +495,35 @@ function loadMovesFromCSV(text) {
     });
   }
 
-  Object.assign(moves, newMoves);
+
+  let moves = {
+    "RS": {
+  min: { "": 0.2 },
+  dmg: { "": 1500 },
+  scale: { "": 1 },
+  cmd: false
+},
+"RC": {
+  min: { "": 0.2 },
+  dmg: { "": 1000 },
+  scale: { "": 1 },
+ cmd: false
+},
+"DA": {
+  min: { "": 0.2 },
+  dmg: { "": 700 },
+  scale: { "": 1 },
+  cmd: false
+},
+"TA": {
+  min: { "": 0.2 },
+  dmg: { "": 1000 },
+  scale: { "": 1 },
+  cmd: false
+}
+  };
+
+  moves = newMoves;
 
   document.getElementById("csvPreview").textContent =
     JSON.stringify(getMoveNameList(newMoves), null, 2);
@@ -558,3 +541,38 @@ function loadMovesFromCSV(text) {
   };
   reader.readAsText(file);
 });
+
+const characterMap = {
+  "ヴィーラ": "vira",
+  "ゾーイ": "zooey",
+  "グリームニエル": "grimnir"
+};
+
+document
+  .getElementById("loadCharBtn")
+  .addEventListener("click", async () => {
+
+    const input = document.getElementById("characterInput");
+    const name = input.value;
+    const id = characterMap[name];
+
+    if (!id) {
+      alert("キャラ名が正しくありません");
+      return;
+    }
+
+    try {
+      const res = await fetch(`./data/${id}.csv`);
+      if (!res.ok) throw new Error("not found");
+
+      const text = await res.text();
+      loadMovesFromCSV(text); // ← 既に作ってある関数
+
+      alert(`${name} を読み込みました`);
+    } catch (e) {
+      alert("CSVの読み込みに失敗しました");
+      console.error(e);
+    }
+  });
+
+
