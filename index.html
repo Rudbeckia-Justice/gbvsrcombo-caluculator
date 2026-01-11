@@ -23,7 +23,6 @@
       <input type="file" id="csvInput" accept=".csv">
       <input id="combo" type="text" placeholder="例：!236U*>cMM>623M" />
       <button onclick="calc()">計算</button>
-      <div class="dresult" id="result"></div>
      <label class="check">
   <input type="checkbox" id="forceTech">
   <span class="quick">クイック入力のみ</span>
@@ -37,6 +36,7 @@
  <input type="checkbox" data-i="1" checked class="BP" onchange="bpChanged(this)">
  <input type="checkbox" data-i="2" checked class="BP" onchange="bpChanged(this)">
 </div>
+<div class="dresult" id="result"></div>
 
 <div id="starterBox" style="display:none; margin-top:8px;">
   <textarea id="startersInput" rows="6" style="width:320px;">
@@ -83,4 +83,5 @@ dL>cMMM
 </body>
 
 </html>
+
 
