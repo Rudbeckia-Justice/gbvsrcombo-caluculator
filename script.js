@@ -80,6 +80,19 @@ function getEnabledStarters() {
     .map(cb => cb.dataset.starter);
 }
 
+function updateDeleteColumn() {
+  const show = document.getElementById("deleteMode").checked;
+  const table = document.getElementById("starterMatrixTable");
+  if (!table) return;
+
+  [...table.rows].forEach(row => {
+    const cell = row.cells[0];
+    if (cell) {
+      cell.style.display = show ? "table-cell" : "none";
+    }
+  });
+}
+
 
 
     // ======================
@@ -331,17 +344,30 @@ if (!makeMatrix) {
 const table = getOrCreateStarterMatrix(starters);
 
 // すでに同じコンボ行があるか探す
-let row = [...table.rows].find(r => r.cells[0].textContent === inputCombo);
+let row = [...table.rows].find(r => r.cells[1].textContent === inputCombo);
 
 // 無ければ新規行
 if (!row) {
   row = table.insertRow();
-  row.insertCell().textContent = inputCombo;
+  // 削除セル
+const delCell = row.insertCell();
+const btn = document.createElement("button");
+btn.textContent = "×";
+btn.onclick = () => row.remove();
+delCell.appendChild(btn);
+delCell.style.display =
+  document.getElementById("deleteMode").checked
+    ? "table-cell"
+    : "none";
 
-  // 始動分のセルを先に作る
-  for (let i = 0; i < starters.length; i++) {
-    row.insertCell();
-  }
+// コンボセル
+row.insertCell().textContent = inputCombo;
+
+// 始動セル
+for (let i = 0; i < starters.length; i++) {
+  row.insertCell();
+}
+
 }
 
 // ダメージを横に埋める
@@ -349,12 +375,12 @@ const enabled = getEnabledStarters();
 
 starters.forEach((starter, i) => {
   if (!enabled.includes(starter)) {
-    row.cells[i + 1].textContent = "—";
+    row.cells[i + 2].textContent = "—";
     return;
   }
 
   const full = starter + ">" + inputCombo;
-  row.cells[i + 1].textContent = calcDamage(full).total;
+  row.cells[i + 2].textContent = calcDamage(full).total;
 });
 
 }
@@ -627,13 +653,16 @@ function getOrCreateStarterTable() {
     table.border = "1";
     table.cellPadding = "6";
 
-    table.innerHTML = `
-      <tr>
-        <th>始動</th>
-        <th>コンボ</th>
-        <th>ダメージ</th>
-      </tr>
-    `;
+    const header = table.insertRow();
+
+    // 削除列（最初は非表示）
+    const delTh = header.insertCell();
+    delTh.textContent = "削除";
+    delTh.style.display = "none";
+
+    header.insertCell().textContent = "始動";
+    header.insertCell().textContent = "コンボ";
+    header.insertCell().textContent = "ダメージ";
 
     document.getElementById("result").innerHTML = "";
     document.getElementById("result").appendChild(table);
@@ -641,6 +670,7 @@ function getOrCreateStarterTable() {
 
   return table;
 }
+
 
 function clearStarterSummary() {
   const vTable = document.getElementById("starterSummaryTable");
@@ -669,7 +699,14 @@ function getOrCreateStarterMatrix(starters) {
 
     // ===== ヘッダ行 =====
     const header = table.insertRow();
-    header.insertCell().textContent = "コンボ";
+
+// 削除列
+const delTh = header.insertCell();
+delTh.textContent = "削除";
+delTh.style.display = "none";
+
+header.insertCell().textContent = "コンボ";
+
 
     for (const s of starters) {
       header.insertCell().textContent = s;
@@ -736,5 +773,8 @@ document
     e.target.checked ? "block" : "none";
 });
 
+document
+  .getElementById("deleteMode")
+  .addEventListener("change", updateDeleteColumn);
 
 
