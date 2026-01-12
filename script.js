@@ -224,6 +224,11 @@ function bpChanged(cb) {
   const result = calcDamage(inputCombo);
 
   let html = `<table border="1" cellpadding="6">
+  <tr>
+      <th colspan="5">合計</th>
+      <th>${result.total}</th>
+    </tr>
+    
     <tr>
       <th>#</th>
       <th>技</th>
@@ -234,19 +239,12 @@ function bpChanged(cb) {
     </tr>`;
 
   result.details.forEach((d, i) => {
-  const desc =
-    moves[d.base]?.desc?.[d.strength] ??
-    moves[d.base]?.desc?.[""] ??
-    "";
 
   html += `
     <tr>
       <td>${i + 1}</td>
       <td>
-        <b>${d.move}</b><br>
-        <span style="font-size:12px;color:#666;">
-          ${desc}
-        </span>
+        <b>${d.move}</b>
       </td>
       <td>${d.hit}</td>
       <td>${d.raw}</td>
@@ -257,10 +255,6 @@ function bpChanged(cb) {
 
 
   html += `
-    <tr>
-      <th colspan="5">合計</th>
-      <th>${result.total}</th>
-    </tr>
   </table>`;
 
   resultDiv.innerHTML = html;
@@ -538,6 +532,9 @@ const descVariants = descStr
   ...commonMoves,
   ...newMoves
 };
+
+const preview = document.getElementById("csvPreview");
+preview.textContent = "";
 
 
   document.getElementById("csvPreview").textContent =
