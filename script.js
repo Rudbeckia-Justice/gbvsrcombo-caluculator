@@ -561,7 +561,7 @@ preview.textContent = "";
 const characterMap = {
   "ヴィーラ": "vira",
   "ゾーイ": "zooey",
-  "グリームニエル": "grimnir"
+  "グリームニル": "grimnir"
 };
 
 document
@@ -593,6 +593,7 @@ document
       console.error(e);
     }
   });
+
 
 
 
