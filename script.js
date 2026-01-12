@@ -50,6 +50,36 @@ function bpChanged(cb) {
   }
 }
 
+let lockedStarters = null; // ← 始動固定用
+
+function buildStarterUI(starters) {
+  const ui = document.getElementById("starterUI");
+  ui.innerHTML = "";
+
+  starters.forEach((s, i) => {
+    const label = document.createElement("label");
+    label.style.display = "block";
+
+    const cb = document.createElement("input");
+    cb.type = "checkbox";
+    cb.checked = true;
+    cb.dataset.starter = s;
+
+    label.appendChild(cb);
+    label.append(" " + s);
+
+    ui.appendChild(label);
+  });
+}
+
+function getEnabledStarters() {
+  return Array.from(
+    document.querySelectorAll("#starterUI input[type=checkbox]")
+  )
+    .filter(cb => cb.checked)
+    .map(cb => cb.dataset.starter);
+}
+
 
 
     // ======================
@@ -262,32 +292,71 @@ function bpChanged(cb) {
 }
 
 
-  // ===== 始動別まとめ =====
-  const starters = getStartersFromInput();
+// ===== 始動別まとめ =====
 
-  let html = `<table border="1" cellpadding="6">
-    <tr>
-      <th>始動</th>
-      <th>コンボ</th>
-      <th>ダメージ</th>
-    </tr>`;
+// ★ ここで始動を確定・ロックする
+let starters = lockedStarters ?? getStartersFromInput();
 
+if (!lockedStarters) {
+  lockedStarters = starters;
+
+  // 始動入力欄をロック
+  document.getElementById("startersInput").disabled = true;
+
+   // UI生成
+  buildStarterUI(starters);
+}
+
+const makeMatrix =
+  document.getElementById("starterTable")?.checked;
+
+
+// --- 縦表（今まで通り） ---
+if (!makeMatrix) {
+  clearStarterSummary();
+  const table = getOrCreateStarterTable();
   for (const starter of starters) {
-    const combo =
-      starter + ">" + inputCombo;
-
+    const combo = starter + ">" + inputCombo;
     const dmg = calcDamage(combo);
 
-    html += `
-      <tr>
-        <td>${starter}</td>
-        <td>${combo}</td>
-        <td>${dmg.total}</td>
-      </tr>`;
+    const row = table.insertRow();
+    row.insertCell().textContent = starter;
+    row.insertCell().textContent = combo;
+    row.insertCell().textContent = dmg.total;
+  }
+  return;
+}
+
+// --- 横マトリクス表 ---
+const table = getOrCreateStarterMatrix(starters);
+
+// すでに同じコンボ行があるか探す
+let row = [...table.rows].find(r => r.cells[0].textContent === inputCombo);
+
+// 無ければ新規行
+if (!row) {
+  row = table.insertRow();
+  row.insertCell().textContent = inputCombo;
+
+  // 始動分のセルを先に作る
+  for (let i = 0; i < starters.length; i++) {
+    row.insertCell();
+  }
+}
+
+// ダメージを横に埋める
+const enabled = getEnabledStarters();
+
+starters.forEach((starter, i) => {
+  if (!enabled.includes(starter)) {
+    row.cells[i + 1].textContent = "—";
+    return;
   }
 
-  html += "</table>";
-  resultDiv.innerHTML = html;
+  const full = starter + ">" + inputCombo;
+  row.cells[i + 1].textContent = calcDamage(full).total;
+});
+
 }
 
 function calcDamage(comboText) {
@@ -533,6 +602,7 @@ const descVariants = descStr
   ...newMoves
 };
 
+
 const preview = document.getElementById("csvPreview");
 preview.textContent = "";
 
@@ -546,6 +616,73 @@ preview.textContent = "";
 
   alert("技表を読み込みました！");
 }
+
+//指導まとめ表作成用関数
+function getOrCreateStarterTable() {
+  let table = document.getElementById("starterSummaryTable");
+
+  if (!table) {
+    table = document.createElement("table");
+    table.id = "starterSummaryTable";
+    table.border = "1";
+    table.cellPadding = "6";
+
+    table.innerHTML = `
+      <tr>
+        <th>始動</th>
+        <th>コンボ</th>
+        <th>ダメージ</th>
+      </tr>
+    `;
+
+    document.getElementById("result").innerHTML = "";
+    document.getElementById("result").appendChild(table);
+  }
+
+  return table;
+}
+
+function clearStarterSummary() {
+  const vTable = document.getElementById("starterSummaryTable");
+  if (vTable) vTable.remove();
+
+  const mTable = document.getElementById("starterMatrixTable");
+  if (mTable) mTable.remove();
+
+  // 表示エリアも空にする
+  document.getElementById("result").innerHTML = "";
+    // ★ 始動ロック解除
+  lockedStarters = null;
+  document.getElementById("starterUI").innerHTML = "";
+  document.getElementById("startersInput").disabled = false;
+}
+
+
+function getOrCreateStarterMatrix(starters) {
+  let table = document.getElementById("starterMatrixTable");
+
+  if (!table) {
+    table = document.createElement("table");
+    table.id = "starterMatrixTable";
+    table.border = "1";
+    table.cellPadding = "6";
+
+    // ===== ヘッダ行 =====
+    const header = table.insertRow();
+    header.insertCell().textContent = "コンボ";
+
+    for (const s of starters) {
+      header.insertCell().textContent = s;
+    }
+
+    document.getElementById("result").innerHTML = "";
+    document.getElementById("result").appendChild(table);
+  }
+
+  return table;
+}
+
+
 
     document.getElementById("csvInput").addEventListener("change", (e) => {
   const file = e.target.files[0];
@@ -594,6 +731,10 @@ document
     }
   });
 
+  document.getElementById("search").addEventListener("change", e => {
+  document.getElementById("starterSummaryOptions").style.display =
+    e.target.checked ? "block" : "none";
+});
 
 
 

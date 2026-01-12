@@ -16,7 +16,7 @@
       <datalist id="characterList">
   <option value="ヴィーラ" data-id="vira"></option>
   <option value="ゾーイ" data-id="zooey"></option>
-  <option value="グリームニル" data-id="grimnir"></option>
+  <option value="グリームニエル" data-id="grimnir"></option>
 </datalist>
 <button id="loadCharBtn">決定</button>
 </div>
@@ -30,6 +30,11 @@
 <label class="check2">
   <input type="checkbox" id="search" onchange="toggleStarterInput()">
   <span>始動別ダメージまとめ</span>
+</label>
+<label class="check3" id="starterSummaryOptions" style="display:none;">
+    <input type="checkbox" id="starterTable">
+    <span>始動表を作成する</span>
+    <button id="starterBtn" onclick="clearStarterSummary()">リセット</button>
 </label><br>
 <div id="bpGroup">
  BP<input type="checkbox" data-i="0" checked class="BP" onchange="bpChanged(this)">
@@ -46,6 +51,7 @@ cHHH
 cL>cMMM
 dL>cMMM
   </textarea>
+  <div id="starterUI"></div>
   <div style="font-size:12px; color:#666;">
     ※ 1行＝1始動（例：cH / dl&gt;cmmm）
   </div>
@@ -83,6 +89,4 @@ dL>cMMM
 </body>
 
 </html>
-
-
 

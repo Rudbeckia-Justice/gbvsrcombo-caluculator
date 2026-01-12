@@ -25,6 +25,16 @@
 .check2 input {
   margin: 0;
   }
+.check3 {
+  display: inline-flex;     /* 横並び */
+  align-items: center;      /* 縦中央 */
+  gap: 0px;                 /* 距離（小さく） */
+  font-size: 14px;
+  margin-top: 6px;   
+}
+.check3 input {
+  margin: 0;
+  }
 .calculator {
   width: 400px;
 }
@@ -41,6 +51,7 @@ input[type="text"] {
   padding: 12px;
   border-radius: 8px;
   text-align: left;
+  margin-right: 0;
 }
 .preview{
   white-space: pre-wrap;        /* 折り返す */
