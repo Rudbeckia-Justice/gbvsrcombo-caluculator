@@ -777,9 +777,11 @@ header.insertCell().textContent = "コンボ";
 
 const characterMap = {
   "ヴィーラ": "vira",
+  "変身後ヴィーラ": "cvira",
   "ゾーイ": "zooey",
   "グリームニル": "grimnir",
-  "変身後ヴィーラ": "cvira"
+  "グラン": "gran"
+  
 };
 
 document
