@@ -93,6 +93,10 @@ function updateDeleteColumn() {
   });
 }
 
+function getInitialBP() {
+  return [...document.querySelectorAll(".BP")]
+    .filter(cb => cb.checked).length;
+}
 
 
     // ======================
@@ -104,25 +108,33 @@ function updateDeleteColumn() {
     min: { "": 0.2 },
     dmg: { "": 1500 },
     scale: { "": 1 },
-    cmd: false
+    BP: {"": 0 },
+    cmd: false,
+    desc: {"":"レイジングストライク"}
   },
   RC: {
     min: { "": 0.2 },
     dmg: { "": 1000 },
     scale: { "": 1 },
-    cmd: false
+    BP: {"": 0 },
+    cmd: false,
+    desc: {"":"レイジングチェイン"}
   },
   DA: {
     min: { "": 0.2 },
     dmg: { "": 700 },
     scale: { "": 1 },
-    cmd: false
+    BP: {"": 0 },
+    cmd: false,
+    desc: {"":"ダブルアタック"}
   },
   TA: {
     min: { "": 0.2 },
     dmg: { "": 1000 },
     scale: { "": 1 },
-    cmd: false
+    BP: {"": 0 },
+    cmd: false,
+    desc: {"":"トリプルアタック"}
   }
 };
 
@@ -344,7 +356,13 @@ if (!makeMatrix) {
 const table = getOrCreateStarterMatrix(starters);
 
 // すでに同じコンボ行があるか探す
-let row = [...table.rows].find(r => r.cells[1].textContent === inputCombo);
+const initialBP = getInitialBP();
+
+let row = [...table.rows].find(r =>
+  r.cells[1].textContent === String(initialBP) &&
+  r.cells[2].textContent === inputCombo
+);
+
 
 // 無ければ新規行
 if (!row) {
@@ -359,6 +377,9 @@ delCell.style.display =
   document.getElementById("deleteMode").checked
     ? "table-cell"
     : "none";
+
+// ★ 初期BPセル
+row.insertCell().textContent = initialBP;
 
 // コンボセル
 row.insertCell().textContent = inputCombo;
@@ -375,12 +396,12 @@ const enabled = getEnabledStarters();
 
 starters.forEach((starter, i) => {
   if (!enabled.includes(starter)) {
-    row.cells[i + 2].textContent = "—";
+    row.cells[i + 3].textContent = "—";
     return;
   }
 
   const full = starter + ">" + inputCombo;
-  row.cells[i + 2].textContent = calcDamage(full).total;
+  row.cells[i + 3].textContent = calcDamage(full).total;
 });
 
 }
@@ -430,19 +451,27 @@ function calcDamage(comboText) {
       data.min?.[parsed.strength] ?? data.min?.[""];
     if (baseMin == null) continue;
 
+    const baseBP = 
+    data.BP?.[parsed.strength] ?? data.BP?.[""];
+    if (baseBP == null) continue;
+
     let damages = Array.isArray(baseDmg) ? baseDmg : [baseDmg];
     damages = filterHits(damages, parsed.hitRange);
 
     let mins = Array.isArray(baseMin) ? baseMin : [baseMin];
     mins = filterHits(mins, parsed.hitRange);
 
+    let BPs = Array.isArray(baseBP) ? baseBP : [baseBP];
+    BPs = filterHits(BPs, parsed.hitRange);
+
+    if (BPs.length === 1 && damages.length > 1) {
+  BPs = [BPs[0], ...Array(damages.length - 1).fill(0)];
+}
+
     const baseScale = 
     data.scale?.[parsed.strength] ?? data.scale?.[""] ?? 1.0;
-    const baseBP = 
-    data.BP?.[parsed.strength] ?? data.BP?.[""] ?? 0;
-
+    
     hit++;
-    BPn -= baseBP;
 
     // RC補正 
     if (parsed.base === "RC" && hit >= 2 && hit <= 5){ 
@@ -451,8 +480,10 @@ function calcDamage(comboText) {
     for (let i = 0; i < damages.length; i++) {
   const d = damages[i];
   const min = mins[i] ?? mins[0]; // 段指定時も安全
-
+  const b = BPs[i] ?? BPs[0];
   const scale = calcScale(hit, min);
+
+  BPn -= b
 
       const techRate =
         checked ? 1.0 : (parsed.techBonus ? 1.1 : 1.0);
@@ -471,7 +502,7 @@ function calcDamage(comboText) {
           
       if (BPn <= 1){
     BPbonus = 1.2;
-    if (BPn === 0){
+    if (BPn <= 0){
       BPbonus = 1.5;
     }
   }
@@ -561,7 +592,7 @@ function loadMovesFromCSV(text) {
         min: {},
         dmg: {},
         scale: {},
-        BP: { "" : Number(BPStr) || 0 },
+        BP: {},
     cmd: cmdStr?.trim().toLowerCase() === "c",
           desc: {}
       };
@@ -569,6 +600,10 @@ function loadMovesFromCSV(text) {
 
     const strengths = strengthStr
       ? strengthStr.split("|").map(s => s.trim().toUpperCase())
+      : [""];
+
+    const BPVariants = BPStr
+      ? BPStr.split("|").map(s => s.trim().toUpperCase())
       : [""];
 
     const damageVariants = damageStr.split("|");
@@ -607,6 +642,13 @@ const descVariants = descStr
         : [Number(minPart)];
 
       newMoves[base].min[s] = mins;
+
+      let BPPart = BPVariants[i] ?? BPVariants[0] ?? "0";
+      const BPs = BPPart.includes("/")
+        ? BPPart.split("/").map(Number)
+        : [Number(BPPart)];
+
+      newMoves[base].BP[s] = BPs;
 
       let scale;
       if (scaleVariants.length === 1) {
@@ -659,7 +701,6 @@ function getOrCreateStarterTable() {
     const delTh = header.insertCell();
     delTh.textContent = "削除";
     delTh.style.display = "none";
-
     header.insertCell().textContent = "始動";
     header.insertCell().textContent = "コンボ";
     header.insertCell().textContent = "ダメージ";
@@ -704,6 +745,8 @@ function getOrCreateStarterMatrix(starters) {
 const delTh = header.insertCell();
 delTh.textContent = "削除";
 delTh.style.display = "none";
+
+header.insertCell().textContent = "初期BP";
 
 header.insertCell().textContent = "コンボ";
 
