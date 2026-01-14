@@ -467,12 +467,7 @@ if (tmp.repeat >= 3) {
     if (baseDmg == null) {
       continue
     }
-     if (baseDmg == 0) {
-      if (transformTo) {
-      currentMoves = characterCache[transformTo]?.moves ?? currentMoves;
-    continue;
-    }
-  }
+     
 
 
     const baseMin =
@@ -499,7 +494,14 @@ if (tmp.repeat >= 3) {
     const baseScale = 
     data.scale?.[parsed.strength] ?? data.scale?.[""] ?? 1.0;
     
+    
     hit++;
+    if (baseDmg == 0) {
+      if (transformTo) {
+      currentMoves = characterCache[transformTo]?.moves ?? currentMoves;
+    hit--;
+    }
+  }
 
     // RC補正 
     if (parsed.base === "RC" && hit >= 2 && hit <= 5){ 
