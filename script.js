@@ -842,32 +842,23 @@ document
   .addEventListener("click", async () => {
 
     const input = document.getElementById("characterInput");
-    const name = input.value;
-    const id = characterMap[name];
 
-    if (!id) {
+    const option = [...document.querySelectorAll("#characterList option")]
+      .find(o => o.value === input.value);
+
+    if (!option) {
       alert("キャラ名が正しくありません");
       return;
     }
 
+    const id = option.dataset.id;
+
     try {
-      // ★ 選択キャラを事前ロード
+      // キャラ本体をロード
       await preloadCharacter(id);
+      moves = characterCache[id].moves;
 
-      // ★ このキャラを現在の技表にする
-     moves = characterCache[id].moves;
-
-
-      // ★ このキャラの「変身先」も事前ロード
-      for (const base in moves) {
-        const data = moves[base];
-        for (const s in data.transform || {}) {
-          const to = data.transform[s];
-          if (to) await preloadCharacter(to);
-        }
-      }
-
-      // プレビュー更新
+      // CSVプレビュー表示
       document.getElementById("csvPreview").textContent =
         getMoveNameList(moves)
           .map(([name, desc]) =>
@@ -878,12 +869,13 @@ document
       input.value = "";
       input.focus();
 
-      alert(`${name} を読み込みました`);
+      alert(`${characterCache[id].name} を読み込みました`);
     } catch (e) {
       alert("CSVの読み込みに失敗しました");
       console.error(e);
     }
   });
+
 
 
   document.getElementById("search").addEventListener("change", e => {
