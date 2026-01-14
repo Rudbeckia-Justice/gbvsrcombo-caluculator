@@ -828,15 +828,6 @@ header.insertCell().textContent = "コンボ";
   reader.readAsText(file);
 });
 
-const characterMap = {
-  "ヴィーラ": "vira",
-  "変身後ヴィーラ": "cvira",
-  "ゾーイ": "zooey",
-  "グリームニル": "grimnir",
-  "グラン": "gran"
-  
-};
-
 document
   .getElementById("loadCharBtn")
   .addEventListener("click", async () => {
@@ -894,5 +885,6 @@ document
   );
   buildCharacterDatalist();
 });
+
 
 
