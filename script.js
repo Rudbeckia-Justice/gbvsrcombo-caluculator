@@ -458,18 +458,7 @@ if (tmp.repeat >= 3) {
   const data = currentMoves[parsed.base];
   if (!data) continue;
 
-    const transformTo =
-  data.transform?.[parsed.strength] ??
-  data.transform?.[""];
-
-  if (transformTo) {
-  const char = characterCache[transformTo];
-  if (!char) {
-    console.error("未ロードの変身先:", transformTo);
-  } else {
-    currentMoves = char.moves;
-  }
-}
+    
 
 
 
@@ -557,6 +546,18 @@ if (tmp.repeat >= 3) {
     if (baseScale <= 0.7 && hit === 1){
       hit = 9 - baseScale*10
     };
+    const transformTo =
+  data.transform?.[parsed.strength] ??
+  data.transform?.[""];
+
+  if (transformTo) {
+  const char = characterCache[transformTo];
+  if (!char) {
+    console.error("未ロードの変身先:", transformTo);
+  } else {
+    currentMoves = char.moves;
+  }
+}
   }
 
   return {
