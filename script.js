@@ -702,6 +702,12 @@ const descVariants = descStr
       }
 
       newMoves[base].scale[s] = scale;
+
+      const trans =
+    transVariants[i] ??
+    transVariants[0] ??
+    "";
+    newMoves[base].transform[s] = trans || null;
     });
   }
 
