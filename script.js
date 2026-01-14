@@ -157,7 +157,7 @@ function getInitialBP() {
         scale: { L: 1.0, M: 1.0, H: 1.0 },
         cmd: true
       },
- commonMoves
+ ...commonMoves
 };
 
     // ======================
@@ -407,6 +407,8 @@ starters.forEach((starter, i) => {
 }
 
 function calcDamage(comboText) {
+  const originalMoves = moves; // ★ 元を保存
+  let currentMoves = moves;    // ★ 計算用
   const expanded = [];
   const checked = document.getElementById("forceTech").checked;
 
@@ -440,8 +442,17 @@ function calcDamage(comboText) {
   const details = []; 
 
   for (const parsed of expanded) {
-    const data = moves[parsed.base];
+    const data = currentMoves[parsed.base];
     if (!data) continue;
+
+    const transformTo =
+  data.transform?.[parsed.strength] ??
+  data.transform?.[""];
+
+if (transformTo) {
+  loadCharacterMoves(transformTo); // CSV読み込み
+  currentMoves = moves;            // 読み込まれた技表に切り替え
+}
 
     const baseDmg =
       data.dmg?.[parsed.strength] ?? data.dmg?.[""];
@@ -528,7 +539,7 @@ function calcDamage(comboText) {
       hit = 9 - baseScale*10
     };
   }
-
+moves = originalMoves; // ★ 完全復元
   return {
   total,
   details
@@ -580,7 +591,7 @@ function loadMovesFromCSV(text) {
   const newMoves = {};
 
   for (const line of lines) {
-    let [base, strengthStr, damageStr, minStr, scaleStr, BPStr, cmdStr, descStr] = line.split(",");
+    let [base, strengthStr, damageStr, minStr, scaleStr, BPStr, cmdStr, transStr, descStr] = line.split(",");
 
     base = base.trim().toUpperCase();
     strengthStr = strengthStr
@@ -594,6 +605,7 @@ function loadMovesFromCSV(text) {
         scale: {},
         BP: {},
     cmd: cmdStr?.trim().toLowerCase() === "c",
+    transform: {},
           desc: {}
       };
     }
@@ -605,6 +617,8 @@ function loadMovesFromCSV(text) {
     const BPVariants = BPStr
       ? BPStr.split("|").map(s => s.trim().toUpperCase())
       : [""];
+      
+      const transVariants =transStr.split("|");
 
     const damageVariants = damageStr.split("|");
     const scaleVariants = scaleStr
