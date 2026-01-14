@@ -102,7 +102,20 @@ function getInitialBP() {
     // ======================
     // 技データ
     // ======================
+const characterCache = {};
+
+async function preloadCharacter(id) {
+  if (characterCache[id]) return;
+
+  const res = await fetch(`./csv/${id}.csv`);
+  if (!res.ok) throw new Error("not found");
+
+  const text = await res.text();
+  characterCache[id] = parseMovesFromCSV(text);
+}
+
    
+
     const commonMoves = {
   RS: {
     min: { "": 0.2 },
@@ -410,7 +423,6 @@ function calcDamage(comboText) {
   const originalMoves = moves; // ★ 元を保存
   let currentMoves = moves;    // ★ 計算用
 
-  try{
   const expanded = [];
   const checked = document.getElementById("forceTech").checked;
 
@@ -451,10 +463,10 @@ function calcDamage(comboText) {
   data.transform?.[parsed.strength] ??
   data.transform?.[""];
 
-if (transformTo) {
-  loadMovesFromCSV(transformTo); // CSV読み込み
-  currentMoves = moves;            // 読み込まれた技表に切り替え
+  if (transformTo) {
+  currentMoves = characterCache[transformTo];
 }
+
 
     const baseDmg =
       data.dmg?.[parsed.strength] ?? data.dmg?.[""];
@@ -541,10 +553,7 @@ if (transformTo) {
       hit = 9 - baseScale*10
     };
   }
-  }
-  finally{
-    moves = originalMoves; // ★ 完全復元
-  }
+
   return {
   total,
   details
@@ -585,7 +594,7 @@ function getMoveNameList(movesObj) {
 
 
 
-function loadMovesFromCSV(text) {
+function parseMovesFromCSV(text) {
   const lines = text
   .trim()
   .replace(/\r/g, "")
@@ -683,13 +692,14 @@ const descVariants = descStr
   }
 
 
-
- moves = {
+return{
   ...commonMoves,
   ...newMoves
 };
+}
 
-
+function loadMovesFromCSV(text){
+moves = parseMovesFromCSV(text);
 const preview = document.getElementById("csvPreview");
 preview.textContent = "";
 
@@ -817,14 +827,31 @@ document
     }
 
     try {
-      const res = await fetch(`./csv/${id}.csv`);
-      if (!res.ok) throw new Error("not found");
+      // ★ 選択キャラを事前ロード
+      await preloadCharacter(id);
 
-      const text = await res.text();
-      loadMovesFromCSV(text); // ← 既に作ってある関数
+      // ★ このキャラを現在の技表にする
+      moves = characterCache[id];
 
-      input.value = "";       // ← 入力欄を空にする
-      input.focus(); 
+      // ★ このキャラの「変身先」も事前ロード
+      for (const base in moves) {
+        const data = moves[base];
+        for (const s in data.transform || {}) {
+          const to = data.transform[s];
+          if (to) await preloadCharacter(to);
+        }
+      }
+
+      // プレビュー更新
+      document.getElementById("csvPreview").textContent =
+        getMoveNameList(moves)
+          .map(([name, desc]) =>
+            desc ? `${name} ： ${desc}` : name
+          )
+          .join("\n");
+
+      input.value = "";
+      input.focus();
 
       alert(`${name} を読み込みました`);
     } catch (e) {
@@ -832,6 +859,7 @@ document
       console.error(e);
     }
   });
+
 
   document.getElementById("search").addEventListener("change", e => {
   document.getElementById("starterSummaryOptions").style.display =
