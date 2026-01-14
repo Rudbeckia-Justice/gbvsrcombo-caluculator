@@ -465,11 +465,15 @@ if (tmp.repeat >= 3) {
     const baseDmg =
       data.dmg?.[parsed.strength] ?? data.dmg?.[""];
     if (baseDmg == null) {
-    if (transformTo) {
-      currentMoves = characterCache[transformTo]?.moves ?? currentMoves;
+      continue
     }
+     if (baseDmg == 0) {
+      if (transformTo) {
+      currentMoves = characterCache[transformTo]?.moves ?? currentMoves;
     continue;
+    }
   }
+
 
     const baseMin =
       data.min?.[parsed.strength] ?? data.min?.[""];
