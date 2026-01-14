@@ -424,18 +424,20 @@ function calcDamage(comboText) {
     .map(s => s.trim());
 
   for (const raw of list) {
-    const tmp = parseMove(raw,currentMoves);
-    if (!tmp) continue;
-    expanded.push(tmp);
+    const tmp = parseMove(raw, currentMoves);
+if (!tmp) continue;
 
-    if (tmp.repeat === 2) {
-      expanded.push({ base: "DA", strength: "", technical: false, onCooldown: false });
-    }
-    if (tmp.repeat >= 3) {
-      expanded.push({ base: "DA", strength: "", technical: false, onCooldown: false });
-      expanded.push({ base: "TA", strength: "", technical: false, onCooldown: false });
-    }
-  }
+// ★ raw（文字列）を入れる
+expanded.push(raw);
+
+if (tmp.repeat === 2) {
+  expanded.push("DA");
+}
+if (tmp.repeat >= 3) {
+  expanded.push("DA");
+  expanded.push("TA");
+}
+}
 
   
 
