@@ -50,6 +50,18 @@ function bpChanged(cb) {
   }
 }
 
+function buildCharacterDatalist() {
+  const datalist = document.getElementById("characterList");
+  datalist.innerHTML = "";
+
+  for (const id in characterCache) {
+    const option = document.createElement("option");
+    option.value = characterCache[id].name;
+    option.dataset.id = id; // ← 後で逆引き用
+    datalist.appendChild(option);
+  }
+}
+
 let lockedStarters = null; // ← 始動固定用
 
 function buildStarterUI(starters) {
@@ -108,11 +120,12 @@ async function preloadCharacter(id) {
   if (characterCache[id]) return;
 
   const res = await fetch(`./csv/${id}.csv`);
-  if (!res.ok) throw new Error("not found");
+  if (!res.ok) throw new Error(id);
 
   const text = await res.text();
   characterCache[id] = parseMovesFromCSV(text);
 }
+
 
    
 
@@ -151,28 +164,7 @@ async function preloadCharacter(id) {
   }
 };
 
-    let moves = {
-      "C": {
-        min: 0.2,
-        dmg: { L: 600, M: 1100, H: 1600 },
-        scale: { L: 1.0, M: 1.0, H: 1.0 },
-        cmd: false
-      },
-      "236": {
-        min: { "": 0.2 },
-        dmg: { L: [300,300,300], M: 1200, H: 1400 },
-        scale: { L: 1.0, M: 1.0, H: 1.0 },
-        cmd: true
-      },
-      "奥義": {
-        min: 0.5,
-        dmg: { "": 4000 },
-        scale: { L: 1.0, M: 1.0, H: 1.0 },
-        cmd: true
-      },
- ...commonMoves
-};
-
+    let moves = null;
     // ======================
     // 補正計算
     // ======================
@@ -464,8 +456,14 @@ function calcDamage(comboText) {
   data.transform?.[""];
 
   if (transformTo) {
-  currentMoves = characterCache[transformTo];
+  const char = characterCache[transformTo];
+  if (!char) {
+    console.error("未ロードの変身先:", transformTo);
+  } else {
+    currentMoves = char.moves;
+  }
 }
+
 
 
     const baseDmg =
@@ -600,6 +598,14 @@ function parseMovesFromCSV(text) {
   .replace(/\r/g, "")
   .split("\n");
 
+  // ===== キャラ名取得 =====
+  let characterName = "UNKNOWN";
+
+  if (lines[0].startsWith("#CHARA")) {
+    characterName = lines[0].split(",")[1]?.trim() ?? characterName;
+    lines.shift(); // メタ行削除
+  }
+
   lines.shift(); // ヘッダ削除
 
   const newMoves = {};
@@ -692,10 +698,13 @@ const descVariants = descStr
   }
 
 
-return{
-  ...commonMoves,
-  ...newMoves
-};
+ return {
+    name: characterName,
+    moves: {
+      ...commonMoves,
+      ...newMoves
+    }
+  };
 }
 
 function loadMovesFromCSV(text){
@@ -831,7 +840,8 @@ document
       await preloadCharacter(id);
 
       // ★ このキャラを現在の技表にする
-      moves = characterCache[id];
+     moves = characterCache[id].moves;
+
 
       // ★ このキャラの「変身先」も事前ロード
       for (const base in moves) {
@@ -869,5 +879,13 @@ document
 document
   .getElementById("deleteMode")
   .addEventListener("change", updateDeleteColumn);
+
+  window.addEventListener("load", async () => {
+  // 全キャラ事前ロードするならここ
+  await Promise.all(
+    Object.values(characterMap).map(id => preloadCharacter(id))
+  );
+  buildCharacterDatalist();
+});
 
 
