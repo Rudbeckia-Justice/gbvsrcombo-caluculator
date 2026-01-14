@@ -821,7 +821,9 @@ const characterMap = {
   "変身後ヴィーラ": "cvira",
   "ゾーイ": "zooey",
   "グリームニル": "grimnir",
-  "グラン": "gran"
+  "グラン": "gran",
+  "源氏ナルメア": "dnarmaya",
+  "神楽ナルメア": "fnarmaya"
   
 };
 
