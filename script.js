@@ -816,6 +816,14 @@ header.insertCell().textContent = "コンボ";
 }
 
 
+const characterMap = {
+  "ヴィーラ": "vira",
+  "変身後ヴィーラ": "cvira",
+  "ゾーイ": "zooey",
+  "グリームニル": "grimnir",
+  "グラン": "gran"
+  
+};
 
     document.getElementById("csvInput").addEventListener("change", (e) => {
   const file = e.target.files[0];
@@ -827,6 +835,7 @@ header.insertCell().textContent = "コンボ";
   };
   reader.readAsText(file);
 });
+
 
 document
   .getElementById("loadCharBtn")
@@ -885,6 +894,5 @@ document
   );
   buildCharacterDatalist();
 });
-
 
 
