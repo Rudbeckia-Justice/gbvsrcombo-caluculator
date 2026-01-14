@@ -452,7 +452,7 @@ function calcDamage(comboText) {
   data.transform?.[""];
 
 if (transformTo) {
-  loadCharacterMoves(transformTo); // CSV読み込み
+  loadMovesFromCSV(transformTo); // CSV読み込み
   currentMoves = moves;            // 読み込まれた技表に切り替え
 }
 
