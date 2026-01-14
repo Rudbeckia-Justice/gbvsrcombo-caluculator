@@ -1,4 +1,5 @@
-﻿base,strength,damage,min,first scale,BP,command,transform,
+﻿#CHARA,ヴィーラ
+base,strength,damage,min,first scale,BP,command,transform,
 c,L|M|H,600|1100|1600,0.2,1,0,,,
 f,L|M|H,600|900|1300,0.2,1,0,,,
 2,L|M|H|U,400|900|1300|1000,0.2,1,0,,,

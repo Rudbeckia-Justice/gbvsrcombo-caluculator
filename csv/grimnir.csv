@@ -1,4 +1,5 @@
-﻿base,strength,damage,min,first scale,BP,command,,description
+﻿#CHARA,グリームニル
+base,strength,damage,min,first scale,BP,command,,description
 c,L|M|H,600|1100|1400,0.2,1,0,,,近距離攻撃
 f,L|M|H,600|900|400/900,0.2,1,0,,,遠距離
 2,L|M|H|U,400|900|1300|1000,0.2,1,0,,,しゃがみ
