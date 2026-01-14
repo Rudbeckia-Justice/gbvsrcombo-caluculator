@@ -171,7 +171,7 @@ function getInitialBP() {
     // ======================
     // 入力解析
     // ======================
-    function parseMove(move) {
+    function parseMove(move,movetable = moves) {
   move = move.trim().toUpperCase();
 
   // ===== 段指定取得 =====
@@ -205,7 +205,7 @@ function getInitialBP() {
     };
   }
 
-  if (moves[move]) {
+  if (movetable[move]) {
     return {
       base: move,
       strength: "",
@@ -409,6 +409,8 @@ starters.forEach((starter, i) => {
 function calcDamage(comboText) {
   const originalMoves = moves; // ★ 元を保存
   let currentMoves = moves;    // ★ 計算用
+
+  try{
   const expanded = [];
   const checked = document.getElementById("forceTech").checked;
 
@@ -418,7 +420,7 @@ function calcDamage(comboText) {
     .map(s => s.trim());
 
   for (const raw of list) {
-    const parsed = parseMove(raw);
+    const parsed = parseMove(raw,currentMoves);
     if (!parsed) continue;
     expanded.push(parsed);
 
@@ -539,7 +541,10 @@ if (transformTo) {
       hit = 9 - baseScale*10
     };
   }
-moves = originalMoves; // ★ 完全復元
+  }
+  finally{
+    moves = originalMoves; // ★ 完全復元
+  }
   return {
   total,
   details
