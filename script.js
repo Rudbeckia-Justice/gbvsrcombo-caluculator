@@ -458,13 +458,18 @@ if (tmp.repeat >= 3) {
   const data = currentMoves[parsed.base];
   if (!data) continue;
 
-    
-
-
+   const transformTo =
+  data.transform?.[parsed.strength] ??
+  data.transform?.[""];
 
     const baseDmg =
       data.dmg?.[parsed.strength] ?? data.dmg?.[""];
-    if (baseDmg == null) continue;
+    if (baseDmg == null) {
+    if (transformTo) {
+      currentMoves = characterCache[transformTo]?.moves ?? currentMoves;
+    }
+    continue;
+  }
 
     const baseMin =
       data.min?.[parsed.strength] ?? data.min?.[""];
@@ -546,10 +551,7 @@ if (tmp.repeat >= 3) {
     if (baseScale <= 0.7 && hit === 1){
       hit = 9 - baseScale*10
     };
-    const transformTo =
-  data.transform?.[parsed.strength] ??
-  data.transform?.[""];
-
+ 
   if (transformTo) {
   const char = characterCache[transformTo];
   if (!char) {
