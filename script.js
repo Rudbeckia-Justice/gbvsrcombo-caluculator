@@ -424,18 +424,20 @@ function calcDamage(comboText) {
     .map(s => s.trim());
 
   for (const raw of list) {
-    const parsed = parseMove(raw,currentMoves);
-    if (!parsed) continue;
-    expanded.push(parsed);
+    const tmp = parseMove(raw,currentMoves);
+    if (!tmp) continue;
+    expanded.push(tmp);
 
-    if (parsed.repeat === 2) {
+    if (tmp.repeat === 2) {
       expanded.push({ base: "DA", strength: "", technical: false, onCooldown: false });
     }
-    if (parsed.repeat >= 3) {
+    if (tmp.repeat >= 3) {
       expanded.push({ base: "DA", strength: "", technical: false, onCooldown: false });
       expanded.push({ base: "TA", strength: "", technical: false, onCooldown: false });
     }
   }
+
+  
 
   //BPボーナス
   const checkedCount = [...document.querySelectorAll(".BP")]
@@ -447,9 +449,12 @@ function calcDamage(comboText) {
   let hit = 0;
   const details = []; 
 
-  for (const parsed of expanded) {
-    const data = currentMoves[parsed.base];
-    if (!data) continue;
+  for (const raw of expanded) {
+  const parsed = parseMove(raw, currentMoves);
+  if (!parsed) continue;
+
+  const data = currentMoves[parsed.base];
+  if (!data) continue;
 
     const transformTo =
   data.transform?.[parsed.strength] ??
@@ -708,20 +713,19 @@ const descVariants = descStr
 }
 
 function loadMovesFromCSV(text){
-moves = parseMovesFromCSV(text);
-const preview = document.getElementById("csvPreview");
-preview.textContent = "";
-
+  const char = parseMovesFromCSV(text);
+  moves = char.moves; // ← ここ重要
 
   document.getElementById("csvPreview").textContent =
-  getMoveNameList(moves)
-    .map(([name, desc]) =>
-      desc ? `${name} ： ${desc}` : name
-    )
-    .join("\n");
+    getMoveNameList(moves)
+      .map(([name, desc]) =>
+        desc ? `${name} ： ${desc}` : name
+      )
+      .join("\n");
 
   alert("技表を読み込みました！");
 }
+
 
 //指導まとめ表作成用関数
 function getOrCreateStarterTable() {
