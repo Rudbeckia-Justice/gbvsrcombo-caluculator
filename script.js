@@ -466,8 +466,17 @@ if (tmp.repeat >= 3) {
   data.transform?.[parsed.strength] ??
   data.transform?.[""];
 
-  const hitnum =
-        parsed.hitflag ? 0 : 1.0;
+  let hitnum = 1;
+  if (parsed.hitflag || (baseDmg === 0 && transformTo)) {
+  hitnum = 0;
+}
+
+// 変身処理は副作用なので分離
+if (baseDmg === 0 && transformTo) {
+  currentMoves =
+    characterCache[transformTo]?.moves ?? currentMoves;
+}
+
 
     const baseDmg =
       data.dmg?.[parsed.strength] ?? data.dmg?.[""];
@@ -503,12 +512,6 @@ if (tmp.repeat >= 3) {
     
     
     hit += hitnum;
-    if (baseDmg == 0) {
-      if (transformTo) {
-      currentMoves = characterCache[transformTo]?.moves ?? currentMoves;
-    hit -= hitnum;
-    }
-  }
 
     // RC補正 
     if (parsed.base === "RC" && hit >= 2 && hit <= 5){ 
@@ -832,11 +835,11 @@ header.insertCell().textContent = "コンボ";
 const characterMap = [
   "vira" ,
   "cvira" ,
- "zooey",
-  "grimnir",
-   "gran",
-    "dnarmaya",
-     "fnarmaya"
+  "zooey" ,
+  "grimnir" ,
+  "gran" ,
+  "dnarmaya" ,
+  "fnarmaya"
     ];
 
     document.getElementById("csvInput").addEventListener("change", (e) => {
