@@ -428,6 +428,38 @@ function calcDamage(comboText) {
     .map(s => s.trim());
 
   for (const raw of list) {
+
+      // ===== 特殊構文: 214H[1,＞cH＞236H,2-3] =====
+  const m = raw.match(/^(.*?)\[(.+)\]$/);
+
+  if (m) {
+    const base = m[1];
+    const parts = m[2].split(",").map(s => s.trim());
+
+    let first = true;
+
+    for (const p of parts) {
+
+      // ＞cH＞236H
+      if (p.startsWith(">")) {
+        const seq = p.slice(1).split(">").map(s => s.trim());
+        expanded.push(...seq);
+        first = false;
+        continue;
+      }
+
+      // 1 / 2-3
+      expanded.push(
+        first
+          ? `${base}[${p}]`
+          : `${base}@[${p}]`
+      );
+      first = false;
+    }
+
+    continue; // ← 超重要
+  }
+
     const tmp = parseMove(raw, currentMoves);
 if (!tmp) continue;
 
