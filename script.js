@@ -190,12 +190,14 @@ async function preloadCharacter(id) {
   move = move
     .replace(/！/g, "!")
     .replace(/＊/g, "*")
-    .replace(/＾/g, "^");
+    .replace(/＾/g, "^")
+    .replace(/＠/g,"@");
 
   const onCooldown = move.includes("!");
   const technical = move.includes("*") || move.includes("^");
   const techBonus = move.includes("*");
-  move = move.replace(/[!*^]/g, "");
+  const hitflag = move.includes("@");
+  move = move.replace(/[!*^@]/g, "");
 
   const lm = move.match(/^(.*?)([LMHU]+)$/);
   if (lm) {
@@ -206,7 +208,8 @@ async function preloadCharacter(id) {
       hitRange,        // ← 追加
       technical,
       techBonus,
-      onCooldown
+      onCooldown,
+      hitflag
     };
   }
 
@@ -217,7 +220,8 @@ async function preloadCharacter(id) {
       hitRange,
       technical,
       techBonus,
-      onCooldown
+      onCooldown,
+      hitflag
     };
   }
 
@@ -462,6 +466,9 @@ if (tmp.repeat >= 3) {
   data.transform?.[parsed.strength] ??
   data.transform?.[""];
 
+  const hitnum =
+        parsed.hitflag ? 0 : 1.0;
+
     const baseDmg =
       data.dmg?.[parsed.strength] ?? data.dmg?.[""];
     if (baseDmg == null) {
@@ -495,11 +502,11 @@ if (tmp.repeat >= 3) {
     data.scale?.[parsed.strength] ?? data.scale?.[""] ?? 1.0;
     
     
-    hit++;
+    hit += hitnum;
     if (baseDmg == 0) {
       if (transformTo) {
       currentMoves = characterCache[transformTo]?.moves ?? currentMoves;
-    hit--;
+    hit -= hitnum;
     }
   }
 
@@ -822,16 +829,15 @@ header.insertCell().textContent = "コンボ";
 }
 
 
-const characterMap = {
-  "ヴィーラ": "vira",
-  "変身後ヴィーラ": "cvira",
-  "ゾーイ": "zooey",
-  "グリームニル": "grimnir",
-  "グラン": "gran",
-  "源氏ナルメア": "dnarmaya",
-  "神楽ナルメア": "fnarmaya"
-  
-};
+const characterMap = [
+  "vira" ,
+  "cvira" ,
+ "zooey",
+  "grimnir",
+   "gran",
+    "dnarmaya",
+     "fnarmaya"
+    ];
 
     document.getElementById("csvInput").addEventListener("change", (e) => {
   const file = e.target.files[0];
@@ -898,7 +904,7 @@ document
   window.addEventListener("load", async () => {
   // 全キャラ事前ロードするならここ
   await Promise.all(
-    Object.values(characterMap).map(id => preloadCharacter(id))
+    characterMap.map(id => preloadCharacter(id))
   );
   buildCharacterDatalist();
 });
