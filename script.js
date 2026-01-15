@@ -466,8 +466,20 @@ if (tmp.repeat >= 3) {
   data.transform?.[parsed.strength] ??
   data.transform?.[""];
 
-  let hitnum = 1;
-  if (parsed.hitflag || (baseDmg === 0 && transformTo)) {
+
+  
+
+
+    const baseDmg =
+      data.dmg?.[parsed.strength] ?? data.dmg?.[""];
+    if (baseDmg == null) {
+      continue
+    }
+    
+
+let hitnum = 1;
+
+if (parsed.hitflag || (baseDmg === 0 && transformTo)) {
   hitnum = 0;
 }
 
@@ -476,14 +488,6 @@ if (baseDmg === 0 && transformTo) {
   currentMoves =
     characterCache[transformTo]?.moves ?? currentMoves;
 }
-
-
-    const baseDmg =
-      data.dmg?.[parsed.strength] ?? data.dmg?.[""];
-    if (baseDmg == null) {
-      continue
-    }
-     
 
 
     const baseMin =
