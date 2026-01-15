@@ -532,7 +532,7 @@ pushWithRepeat(raw, currentMoves, expanded);
 
 let hitnum = 1;
 
-if (parsed.hitflag || (baseDmg === 0 && transformTo)) {
+if (parsed.hitflag || (baseDmg == 0 && transformTo)) {
   hitnum = 0;
 }
 
