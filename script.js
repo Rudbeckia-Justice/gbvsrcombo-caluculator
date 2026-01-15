@@ -262,6 +262,40 @@ async function preloadCharacter(id) {
   return result;
 }
 
+function splitCombo(text) {
+  const result = [];
+  let buf = "";
+  let depth = 0;
+
+  for (const ch of text) {
+    if (ch === "[") depth++;
+    if (ch === "]") depth--;
+    if (ch === ">" && depth === 0) {
+      result.push(buf.trim());
+      buf = "";
+    } else {
+      buf += ch;
+    }
+  }
+  if (buf) result.push(buf.trim());
+  return result;
+}
+
+function pushWithRepeat(raw, currentMoves, expanded) {
+  const tmp = parseMove(raw, currentMoves);
+  if (!tmp) return;
+
+  expanded.push(raw);
+
+  if (tmp.repeat === 2) {
+    expanded.push("DA");
+  }
+  if (tmp.repeat >= 3) {
+    expanded.push("DA");
+    expanded.push("TA");
+  }
+}
+
 
     // ======================
     // メイン処理
@@ -422,10 +456,8 @@ function calcDamage(comboText) {
   const expanded = [];
   const checked = document.getElementById("forceTech").checked;
 
-  const list = comboText
-    .replace(/＞/g, ">")
-    .split(">")
-    .map(s => s.trim());
+ const list = splitCombo(comboText.replace(/＞/g, ">"));
+
 
   for (const raw of list) {
 
@@ -441,12 +473,16 @@ function calcDamage(comboText) {
     for (const p of parts) {
 
       // ＞cH＞236H
-      if (p.startsWith(">")) {
-        const seq = p.slice(1).split(">").map(s => s.trim());
-        expanded.push(...seq);
-        first = false;
-        continue;
-      }
+     if (p.startsWith(">")) {
+  const seq = p.slice(1).split(">").map(s => s.trim());
+
+  for (const s of seq) {
+    pushWithRepeat(s, currentMoves, expanded);
+  }
+
+  first = false;
+  continue;
+}
 
       // 1 / 2-3
       expanded.push(
@@ -460,19 +496,8 @@ function calcDamage(comboText) {
     continue; // ← 超重要
   }
 
-    const tmp = parseMove(raw, currentMoves);
-if (!tmp) continue;
+pushWithRepeat(raw, currentMoves, expanded);
 
-// ★ raw（文字列）を入れる
-expanded.push(raw);
-
-if (tmp.repeat === 2) {
-  expanded.push("DA");
-}
-if (tmp.repeat >= 3) {
-  expanded.push("DA");
-  expanded.push("TA");
-}
 }
 
   
@@ -613,7 +638,6 @@ if (parsed.hitflag || (baseDmg === 0 && transformTo)) {
   total,
   details
 };
-
 }
 
 function getMoveNameList(movesObj) {
