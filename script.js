@@ -529,13 +529,15 @@ pushWithRepeat(raw, currentMoves, expanded);
       continue
     }
     
+    const ZeroDmg = Number(baseDmg)
 
 let hitnum = 1;
 
-if (parsed.hitflag || (baseDmg == 0 && transformTo)) {
+if (parsed.hitflag || (ZeroDmg === 0 && transformTo)) {
   hitnum = 0;
 }
 
+console.log("baseDmg:", baseDmg, "type:", typeof baseDmg);
 
     const baseMin =
       data.min?.[parsed.strength] ?? data.min?.[""];
