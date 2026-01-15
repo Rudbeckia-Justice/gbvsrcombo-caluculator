@@ -229,7 +229,10 @@ async function preloadCharacter(id) {
 }
     function filterHits(damages, hitRange) {
   if (!hitRange) return damages;
-
+   // ★ データが1個しかない場合は使い回す
+  if (damages.length === 1) {
+    return damages;
+  }
   const n = damages.length;
   const result = [];
 
@@ -262,6 +265,37 @@ async function preloadCharacter(id) {
   return result;
 }
 
+
+
+function splitCombo(text) {
+  const result = [];
+  let buf = "";
+  let depth = 0;
+  for (const ch of text) {
+    if (ch === "[") depth++;
+    if (ch === "]") depth--;
+    if (ch === ">" && depth === 0) {
+      result.push(buf.trim());
+      buf = "";
+    } else {
+      buf += ch;
+    }
+  }
+  if (buf) result.push(buf.trim());
+  return result;
+}
+function pushWithRepeat(raw, currentMoves, expanded) {
+  const tmp = parseMove(raw, currentMoves);
+  if (!tmp) return;
+  expanded.push(raw);
+  if (tmp.repeat === 2) {
+    expanded.push("DA");
+  }
+  if (tmp.repeat >= 3) {
+    expanded.push("DA");
+    expanded.push("TA");
+  }
+}
 
     // ======================
     // メイン処理
@@ -422,26 +456,44 @@ function calcDamage(comboText) {
   const expanded = [];
   const checked = document.getElementById("forceTech").checked;
 
-  const list = comboText
-    .replace(/＞/g, ">")
-    .split(">")
-    .map(s => s.trim());
+   const list = splitCombo(comboText.replace(/＞/g, ">"));
 
   for (const raw of list) {
 
-    const tmp = parseMove(raw, currentMoves);
-if (!tmp) continue;
+      // ===== 特殊構文: 214H[1,＞cH＞236H,2-3] =====
+  const m = raw.match(/^(.*?)\[(.+)\]$/);
+   if (m) {
+    const base = m[1];
+    const parts = m[2].split(",").map(s => s.trim());
+      let first = true;
 
-// ★ raw（文字列）を入れる
-expanded.push(raw);
+    for (const p of parts) {
 
-if (tmp.repeat === 2) {
-  expanded.push("DA");
+      // ＞cH＞236H
+     if (p.startsWith(">")) {
+  const seq = p.slice(1).split(">").map(s => s.trim());
+
+  for (const s of seq) {
+    pushWithRepeat(s, currentMoves, expanded);
+  }
+
+  first = false;
+  continue;
 }
-if (tmp.repeat >= 3) {
-  expanded.push("DA");
-  expanded.push("TA");
-}
+     // 1 / 2-3
+      expanded.push(
+        first
+          ? `${base}[${p}]`
+          : `${base}@[${p}]`
+      );
+      first = false;
+    }
+
+    continue; // ← 超重要
+  }
+
+pushWithRepeat(raw, currentMoves, expanded);
+
 }
 
   
