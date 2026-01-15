@@ -515,12 +515,6 @@ if (parsed.hitflag || (baseDmg === 0 && transformTo)) {
   hitnum = 0;
 }
 
-// 変身処理は副作用なので分離
-if (baseDmg === 0 && transformTo) {
-  currentMoves =
-    characterCache[transformTo]?.moves ?? currentMoves;
-}
-
 
     const baseMin =
       data.min?.[parsed.strength] ?? data.min?.[""];
@@ -604,6 +598,7 @@ if (baseDmg === 0 && transformTo) {
       hit = 9 - baseScale*10
     };
  
+
   if (transformTo) {
   const char = characterCache[transformTo];
   if (!char) {
