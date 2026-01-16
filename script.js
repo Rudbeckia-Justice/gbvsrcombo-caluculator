@@ -285,12 +285,21 @@ async function preloadCharacter(id) {
 
 function uplove() {
   const input = document.getElementById("loveinput");
-  input.value = Number(input.value) + 1;
+  const value = Number(input.value) || 0;
+
+  if (value < 13) {
+    input.value = value + 1;
+  }
 }
+
 
 function downlove() {
   const input = document.getElementById("loveinput");
-  input.value = Number(input.value) - 1;
+  const value = Number(input.value) || 0;
+
+  if (value > 0) {
+    input.value = value - 1;
+  }
 }
 
 
@@ -1013,6 +1022,8 @@ document
 document.getElementById("loved").style.display = "block";
     }else{
       document.getElementById("loved").style.display = "none";
+      const input = document.getElementById("loveinput");
+      input.value = 13; 
     }
   });
 
