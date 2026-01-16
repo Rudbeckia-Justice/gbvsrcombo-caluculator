@@ -111,6 +111,7 @@ function getInitialBP() {
 }
 
 function loveculc(love,base,damages){
+  damages = damages
   if (love <= 8){
   if(base === "SBA")
   damages = [3300,100,100,100,100,100,100,100,100,100,100,100,100];
@@ -605,7 +606,7 @@ console.log("baseDmg:", baseDmg, "type:", typeof baseDmg);
     loves -= lovecount;
   }
 
-  loveculc(loves,parsed.base,damages);
+  damages = loveculc(loves,parsed.base,damages);
 
     console.log("loves:", loves, "type:", typeof loves);
 
