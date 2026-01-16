@@ -892,7 +892,9 @@ const characterMap = [
   "grimnir" ,
   "gran" ,
   "dnarmaya" ,
-  "fnarmaya"
+  "fnarmaya" ,
+  "djeeta" ,
+  "katalina"
     ];
 
     document.getElementById("csvInput").addEventListener("change", (e) => {
