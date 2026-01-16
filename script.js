@@ -110,13 +110,13 @@ function getInitialBP() {
     .filter(cb => cb.checked).length;
 }
 
-function loveculc(love,base,damages){
-  damages = damages
+function loveculc(love,base,damages,bp){
   if (love <= 8){
   if(base === "SBA")
   damages = [3300,100,100,100,100,100,100,100,100,100,100,100,100];
 if (base === "SSBA"){
   damages = [600,600,600,600,600,600,900];
+  bp = [2,0,0,0,0,0,0]
 }
   }
   if(love <= 3){
@@ -124,9 +124,12 @@ if (base === "SSBA"){
   damages = [4000,100,100,100,100,100,100,100,100,100,100,100,100];
 if (base === "SSBA"){
   damages = [350,350,350,350,350,350,350,350,350,350,350,350,1000];
+  bp = [2,0,0,0,0,0,0,0,0,0,0,0,0]
 }
   }
-  return damages;
+  return {damages,
+    bp
+  };
 }
 
     // ======================
@@ -617,8 +620,9 @@ console.log("baseDmg:", baseDmg, "type:", typeof baseDmg);
     loves -= lovecount;
   }
 
-  damages = loveculc(loves,parsed.base,damages);
-
+  const loved = loveculc(loves,parsed.base,damages,BPs);
+  damages = loved.damages;
+  BPs = loved.bp
     console.log("loves:", loves, "type:", typeof loves);
 
     // RC補正 
