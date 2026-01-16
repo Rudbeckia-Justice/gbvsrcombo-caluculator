@@ -1006,7 +1006,7 @@ document
       alert("CSVの読み込みに失敗しました");
       console.error(e);
     }
-    if (characterCache[id] === nier || characterCache[id] === dnier){
+    if (characterCache[id] === "nier" || characterCache[id] === "dnier"){
 document.getElementById("loved").style.display = "block";
     }else{
       document.getElementById("loved").style.display = "none";
@@ -1031,6 +1031,5 @@ document
   );
   buildCharacterDatalist();
 });
-
 
 
