@@ -551,11 +551,13 @@ pushWithRepeat(raw, currentMoves, expanded);
   data.transform?.[parsed.strength] ??
   data.transform?.[""];
 
-const lovecount =
+const lovecount = 
   data.love?.[parsed.strength] ??
-  data.love?.[""];
-  
+  data.love?.[""] ??
+  0;
 
+  
+console.log("lovecount:", lovecount, "type:", typeof lovecount);
 
     const baseDmg =
       data.dmg?.[parsed.strength] ?? data.dmg?.[""];
