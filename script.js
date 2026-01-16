@@ -605,7 +605,7 @@ console.log("baseDmg:", baseDmg, "type:", typeof baseDmg);
     loves -= lovecount;
   }
 
-  loveculc(loves,parsed.base,dmages);
+  loveculc(loves,parsed.base,damages);
 
     console.log("loves:", loves, "type:", typeof loves);
 
@@ -1031,5 +1031,6 @@ document
   );
   buildCharacterDatalist();
 });
+
 
 
