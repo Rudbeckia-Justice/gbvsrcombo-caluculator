@@ -110,6 +110,23 @@ function getInitialBP() {
     .filter(cb => cb.checked).length;
 }
 
+function loveculc(love,base,damages){
+  if (love <= 8){
+  if(base === "SBA")
+  damages = [3300,100,100,100,100,100,100,100,100,100,100,100,100];
+if (base === "SSBA"){
+  damages = [600,600,600,600,600,600,900];
+}
+  }
+  if(love <= 3){
+    if(base === "SBA")
+  damages = [4000,100,100,100,100,100,100,100,100,100,100,100,100];
+if (base === "SSBA"){
+  damages = [350,350,350,350,350,350,350,350,350,350,350,350,1000];
+}
+  }
+  return damages;
+}
 
     // ======================
     // 技データ
@@ -264,6 +281,17 @@ async function preloadCharacter(id) {
 
   return result;
 }
+
+function uplove() {
+  const input = document.getElementById("loveinput");
+  input.value = Number(input.value) + 1;
+}
+
+function downlove() {
+  const input = document.getElementById("loveinput");
+  input.value = Number(input.value) - 1;
+}
+
 
 
 
@@ -453,6 +481,9 @@ function calcDamage(comboText) {
   const originalMoves = moves; // ★ 元を保存
   let currentMoves = moves;    // ★ 計算用
 
+   let loves =
+    Number(document.getElementById("loveinput").value) || 0;
+
   const expanded = [];
   const checked = document.getElementById("forceTech").checked;
 
@@ -519,7 +550,9 @@ pushWithRepeat(raw, currentMoves, expanded);
   data.transform?.[parsed.strength] ??
   data.transform?.[""];
 
-
+const lovecount =
+  data.love?.[parsed.strength] ??
+  data.love?.[""];
   
 
 
@@ -565,6 +598,16 @@ console.log("baseDmg:", baseDmg, "type:", typeof baseDmg);
     
     
     hit += hitnum;
+    if(lovecount < 0){
+      loves = 13;
+    }
+    else{
+    loves -= lovecount;
+  }
+
+  loveculc(loves,parsed.base,dmages);
+
+    console.log("loves:", loves, "type:", typeof loves);
 
     // RC補正 
     if (parsed.base === "RC" && hit >= 2 && hit <= 5){ 
@@ -690,7 +733,7 @@ function parseMovesFromCSV(text) {
   const newMoves = {};
 
   for (const line of lines) {
-    let [base, strengthStr, damageStr, minStr, scaleStr, BPStr, cmdStr, transStr, descStr] = line.split(",");
+    let [base, strengthStr, damageStr, minStr, scaleStr, BPStr, cmdStr, transStr, descStr ,loveStr] = line.split(",");
 
     base = base.trim().toUpperCase();
     strengthStr = strengthStr
@@ -705,7 +748,8 @@ function parseMovesFromCSV(text) {
         BP: {},
     cmd: cmdStr?.trim().toLowerCase() === "c",
     transform: {},
-          desc: {}
+          desc: {},
+          love: {}
       };
     }
 
@@ -715,6 +759,10 @@ function parseMovesFromCSV(text) {
 
     const BPVariants = BPStr
       ? BPStr.split("|").map(s => s.trim().toUpperCase())
+      : [""];
+
+      const loveVariants = loveStr
+      ? loveStr.split("|").map(s => s.trim().toUpperCase())
       : [""];
       
       const transVariants =transStr.split("|");
@@ -778,7 +826,17 @@ const descVariants = descStr
     transVariants[i] ??
     transVariants[0] ??
     "";
+
+
     newMoves[base].transform[s] = trans || null;
+
+    const loves =
+    loveVariants[i] ??
+    loveVariants[0] ??
+    "";
+
+    newMoves[base].love[s] = loves;
+
     });
   }
 
@@ -894,7 +952,9 @@ const characterMap = [
   "dnarmaya" ,
   "fnarmaya" ,
   "djeeta" ,
-  "katalina"
+  "katalina",
+  "nier" ,
+  "dnier"
     ];
 
     document.getElementById("csvInput").addEventListener("change", (e) => {
@@ -945,6 +1005,11 @@ document
     } catch (e) {
       alert("CSVの読み込みに失敗しました");
       console.error(e);
+    }
+    if (characterCache[id] === nier || characterCache[id] === dnier){
+document.getElementById("loved").style.display = "block";
+    }else{
+      document.getElementById("loved").style.display = "none";
     }
   });
 
