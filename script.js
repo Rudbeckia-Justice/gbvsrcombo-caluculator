@@ -1026,7 +1026,8 @@ const characterMap = [
   "djeeta" ,
   "katalina",
   "nier" ,
-  "dnier"
+  "dnier" ,
+  "lucilius"
     ];
 
     document.getElementById("csvInput").addEventListener("change", (e) => {
