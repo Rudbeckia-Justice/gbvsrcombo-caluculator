@@ -911,7 +911,9 @@ const descVariants = descStr
 
     newMoves[base].blade[s] = blades;
 
-
+if (conclStr === undefined) {
+  console.warn("conclStr undefined:", line);
+}
     });
   }
 
