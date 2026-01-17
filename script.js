@@ -1070,6 +1070,7 @@ document
       // CSVプレビュー表示
       document.getElementById("csvPreview").textContent =
         getMoveNameList(moves)
+        .filter(([name, desc, concl]) => !concl) // concl=true を除外
           .map(([name, desc]) =>
             desc ? `${name} ： ${desc}` : name
           )
