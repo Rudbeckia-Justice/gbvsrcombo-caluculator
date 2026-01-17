@@ -286,23 +286,21 @@ async function preloadCharacter(id) {
   return result;
 }
 
-function uplove() {
-  const input = document.getElementById("loveinput");
+function upid(id, max) {
+  const input = document.getElementById(id);
+  if (!input) return;
   const value = Number(input.value) || 0;
 
-  if (value < 13) {
-    input.value = value + 1;
-  }
+input.value = Math.min(max ,value +1);
 }
 
 
-function downlove() {
-  const input = document.getElementById("loveinput");
+function downid(id, min) {
+  const input = document.getElementById(id);
+  if (!input) return;
   const value = Number(input.value) || 0;
 
-  if (value > 0) {
-    input.value = value - 1;
-  }
+  input.value = Math.max(min ,value -1);
 }
 
 
