@@ -750,7 +750,8 @@ function getMoveNameList(movesObj) {
     ) {
       list.push([
         base,
-        data.desc?.[""] ?? ""
+        data.desc?.[""] ?? "" ,
+         data.concl ?? false
       ]);
     }
     // 強度あり
@@ -758,7 +759,8 @@ function getMoveNameList(movesObj) {
       for (const s of strengths) {
         list.push([
           s === "" ? base : base + s,
-          data.desc?.[s] ?? data.desc?.[""] ?? ""
+          data.desc?.[s] ?? data.desc?.[""] ?? "" ,
+           data.concl ?? false
         ]);
       }
     }
