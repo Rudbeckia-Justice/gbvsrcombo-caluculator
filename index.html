@@ -52,8 +52,20 @@ value = "13"
 min = "0"
 step = "1"
 >
-<button onclick="upid('loveinput',13)" >+</button>
-<button onclick="downid('loveinput',0)">-</button>
+<button onclick="upid('loveinput',13 ,1)" >+</button>
+<button onclick="downid('loveinput',0 ,1)">-</button>
+  </div>
+  <div id = "bladed" style = "display:none;">
+  ブレードレベル
+<input
+type ="number"
+id = "bladeinput"
+value = "0"
+min = "0"
+step = "0.25"
+>
+<button onclick="upid('bladeinput' ,5 ,0.25)" >+</button>
+<button onclick="downid('bladeinput' ,0 ,0.25)">-</button>
   </div>
 <div class="dresult" id="result"></div>
 

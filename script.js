@@ -110,26 +110,39 @@ function getInitialBP() {
     .filter(cb => cb.checked).length;
 }
 
-function loveculc(love,base,damages,bp){
+function loveculc(love,parsed){
+  let base = parsed.base
   if (love <= 8){
-  if(base === "SBA")
-  damages = [3300,100,100,100,100,100,100,100,100,100,100,100,100];
-if (base === "SSBA"){
-  damages = [600,600,600,600,600,600,900];
-  bp = [2,0,0,0,0,0,0]
+  if(parsed.base === "SBA")
+  base = "2SBA";
+if (parsed.base === "SSBA"){
+  base = "2SSBA"
 }
   }
   if(love <= 3){
-    if(base === "SBA")
-  damages = [4000,100,100,100,100,100,100,100,100,100,100,100,100];
-if (base === "SSBA"){
-  damages = [350,350,350,350,350,350,350,350,350,350,350,350,1000];
-  bp = [2,0,0,0,0,0,0,0,0,0,0,0,0]
+    if(parsed.base === "SBA")
+  base ="3SBA"
+if (parsed.base === "SSBA"){
+ base = "3SSBA"
 }
   }
-  return {damages,
-    bp
-  };
+  return base;
+}
+
+function bladeculc(blade,parsed){
+  let base = parsed.base
+  if(parsed.cmd === true){
+  if (blade >= 2){
+    base = "1" + parsed.base
+}
+  if(blade >= 4){
+   base = "2" + parsed.base
+  }
+  if(blade === 5){
+   base = "3" + parsed.base
+  }
+}
+  return base;
 }
 
     // ======================
@@ -286,21 +299,21 @@ async function preloadCharacter(id) {
   return result;
 }
 
-function upid(id, max) {
+function upid(id, max ,num) {
   const input = document.getElementById(id);
   if (!input) return;
   const value = Number(input.value) || 0;
 
-input.value = Math.min(max ,value +1);
+input.value = Math.min(max ,value +num);
 }
 
 
-function downid(id, min) {
+function downid(id, min ,num) {
   const input = document.getElementById(id);
   if (!input) return;
   const value = Number(input.value) || 0;
 
-  input.value = Math.max(min ,value -1);
+  input.value = Math.max(min ,value -num);
 }
 
 
@@ -495,6 +508,9 @@ function calcDamage(comboText) {
    let loves =
     Number(document.getElementById("loveinput").value) || 0;
 
+    let blades =
+    Number(document.getElementById("bladeinput").value) || 0;
+
   const expanded = [];
   const checked = document.getElementById("forceTech").checked;
 
@@ -554,20 +570,51 @@ pushWithRepeat(raw, currentMoves, expanded);
   const parsed = parseMove(raw, currentMoves);
   if (!parsed) continue;
 
-  const data = currentMoves[parsed.base];
+  let data = currentMoves[parsed.base];
   if (!data) continue;
 
-   const transformTo =
-  data.transform?.[parsed.strength] ??
-  data.transform?.[""];
+  
 
-const lovecount = 
+const lovecount = Number( 
   data.love?.[parsed.strength] ??
   data.love?.[""] ??
-  0;
+  0
+);
+
+  const bladecount = Number(
+  data.blade[0]?.[parsed.strength] ??
+  data.blade[0]?.[""] ??
+  0
+);
+    const bladehitcount = Number(
+  data.blade[1]?.[parsed.strength] ??
+  data.blade[1]?.[""] ??
+  0
+);
 
   
 console.log("lovecount:", lovecount, "type:", typeof lovecount);
+
+ if(lovecount < 0){
+      loves = 13;
+    }
+    else{
+    loves -= lovecount;
+  }
+    console.log("loves:", loves, "type:", typeof loves);
+  
+  const loved = loveculc(loves,parsed);
+  if (blades != 0){
+  const bladed = bladeculc(blades,parsed);
+  data = currentMoves[bladed];
+  }
+    data = currentMoves[loved];
+  if (!data) continue;
+  
+
+ const transformTo =
+  data.transform?.[parsed.strength] ??
+  data.transform?.[""];
 
     const baseDmg =
       data.dmg?.[parsed.strength] ?? data.dmg?.[""];
@@ -579,7 +626,7 @@ console.log("lovecount:", lovecount, "type:", typeof lovecount);
 
 let hitnum = 1;
 
-if (parsed.hitflag || (ZeroDmg === 0 && transformTo)) {
+if (parsed.hitflag || data.hitf || (ZeroDmg === 0 && transformTo)) {
   hitnum = 0;
 }
 
@@ -611,17 +658,11 @@ console.log("baseDmg:", baseDmg, "type:", typeof baseDmg);
     
     
     hit += hitnum;
-    if(lovecount < 0){
-      loves = 13;
-    }
-    else{
-    loves -= lovecount;
-  }
-
-  const loved = loveculc(loves,parsed.base,damages,BPs);
-  damages = loved.damages;
-  BPs = loved.bp
-    console.log("loves:", loves, "type:", typeof loves);
+   blades = Math.min(5 ,blades + bladecount);
+const stotal = damages.reduce((sum, dd) => sum + dd, 0);
+if ( stotal === 0 && parsed.hitflag){
+  blades = Math.min(5 ,blades + bladehitcount);
+}
 
     // RC補正 
     if (parsed.base === "RC" && hit >= 2 && hit <= 5){ 
@@ -747,7 +788,7 @@ function parseMovesFromCSV(text) {
   const newMoves = {};
 
   for (const line of lines) {
-    let [base, strengthStr, damageStr, minStr, scaleStr, BPStr, cmdStr, transStr, descStr ,loveStr] = line.split(",");
+    let [base, strengthStr, damageStr, minStr, scaleStr, BPStr, cmdStr, transStr, descStr ,loveStr ,bladeStr ,hitfStr ,conclStr] = line.split(",");
 
     base = base.trim().toUpperCase();
     strengthStr = strengthStr
@@ -763,7 +804,10 @@ function parseMovesFromCSV(text) {
     cmd: cmdStr?.trim().toLowerCase() === "c",
     transform: {},
           desc: {},
-          love: {}
+          love: {},
+          blade: {},
+          hitf: hitfStr?.trim().toLowerCase() === "f",
+          concl: conclStr?.trim().toLowerCase() === "c"
       };
     }
 
@@ -777,6 +821,10 @@ function parseMovesFromCSV(text) {
 
       const loveVariants = loveStr
       ? loveStr.split("|").map(s => s.trim().toUpperCase())
+      : [""];
+
+      const bladeVariants = bladeStr
+      ? bladeStr.split("|").map(s => s.trim().toUpperCase())
       : [""];
       
       const transVariants =transStr.split("|");
@@ -851,6 +899,15 @@ const descVariants = descStr
 
     newMoves[base].love[s] = loves;
 
+   let bladePart = bladeVariants[i] ?? bladeVariants[0] ?? "0";
+      const blades = bladePart.includes("/")
+        ? bladePart.split("/").map(Number)
+        : [Number(bladePart)];
+
+
+    newMoves[base].blade[s] = blades;
+
+
     });
   }
 
@@ -870,6 +927,7 @@ function loadMovesFromCSV(text){
 
   document.getElementById("csvPreview").textContent =
     getMoveNameList(moves)
+    .filter(([name, desc, concl]) => !concl) // concl=true を除外
       .map(([name, desc]) =>
         desc ? `${name} ： ${desc}` : name
       )
@@ -1026,6 +1084,14 @@ document.getElementById("loved").style.display = "block";
       document.getElementById("loved").style.display = "none";
       const input = document.getElementById("loveinput");
       input.value = 13; 
+    }
+
+    if (id === "lucilius") {
+document.getElementById("bladed").style.display = "block";
+    }else{
+      document.getElementById("bladed").style.display = "none";
+      const input = document.getElementById("bladeinput");
+      input.value = 0; 
     }
   });
 
