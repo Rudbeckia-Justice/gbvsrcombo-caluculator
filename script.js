@@ -134,11 +134,9 @@ function bladeculc(blade,parsed){
   if(parsed.cmd === true){
   if (blade >= 2){
     base = "1" + parsed.base
-}
-  if(blade >= 4){
+}else if(blade >= 4){
    base = "2" + parsed.base
-  }
-  if(blade === 5){
+  }else if(blade === 5){
    base = "3" + parsed.base
   }
 }
@@ -581,18 +579,14 @@ const lovecount = Number(
   0
 );
 
-  const bladecount = Number(
-  data.blade[0]?.[parsed.strength] ??
-  data.blade[0]?.[""] ??
-  0
-);
-    const bladehitcount = Number(
-  data.blade[1]?.[parsed.strength] ??
-  data.blade[1]?.[""] ??
-  0
-);
+  const bladeArr =
+  data.blade?.[parsed.strength] ??
+  data.blade?.[""] ??
+  [0, 0];
 
-  
+const bladecount = Number(bladeArr[0] ?? 0);
+const bladehitcount = Number(bladeArr[1] ?? 0);
+
 console.log("lovecount:", lovecount, "type:", typeof lovecount);
 
  if(lovecount < 0){
@@ -660,9 +654,11 @@ console.log("baseDmg:", baseDmg, "type:", typeof baseDmg);
     hit += hitnum;
    blades = Math.min(5 ,blades + bladecount);
 const stotal = damages.reduce((sum, dd) => sum + dd, 0);
-if ( stotal === 0 && parsed.hitflag){
+if ( stotal !== 0 && !parsed.hitflag){
   blades = Math.min(5 ,blades + bladehitcount);
 }
+
+console.log("blades:", blades, "type:", typeof blades);
 
     // RC補正 
     if (parsed.base === "RC" && hit >= 2 && hit <= 5){ 
