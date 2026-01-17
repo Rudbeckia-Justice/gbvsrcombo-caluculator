@@ -129,16 +129,16 @@ if (parsed.base === "SSBA"){
   return base;
 }
 
-function bladeculc(blade,parsed){
+function bladeculc(blade,parsed,data){
   let base = parsed.base
-  if(parsed.cmd === true){
-  if (blade >= 2){
-    base = "1" + parsed.base
-}else if(blade >= 4){
-   base = "2" + parsed.base
-  }else if(blade === 5){
+  if(data.cmd === true){
+  if (blade === 5){
    base = "3" + parsed.base
-  }
+  }else if(blade >= 4){
+   base = "2" + parsed.base
+  }else if(blade >= 2){
+    base = "1" + parsed.base
+}
 }
   return base;
 }
@@ -597,13 +597,19 @@ console.log("lovecount:", lovecount, "type:", typeof lovecount);
   }
     console.log("loves:", loves, "type:", typeof loves);
   
-  const loved = loveculc(loves,parsed);
-  if (blades != 0){
-  const bladed = bladeculc(blades,parsed);
+
+  if (blades !== 0){
+  const bladed = bladeculc(blades,parsed,data);
   data = currentMoves[bladed];
+  if (!data) continue;
   }
+
+console.log("bladed" ,data.dmg);
+if (loves!== 13){
+  const loved = loveculc(loves,parsed);
     data = currentMoves[loved];
   if (!data) continue;
+}
   
 
  const transformTo =
