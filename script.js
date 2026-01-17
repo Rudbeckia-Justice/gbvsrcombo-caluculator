@@ -110,7 +110,7 @@ function getInitialBP() {
     .filter(cb => cb.checked).length;
 }
 
-function loveculc(love,parsed){
+function lovecalc(love,parsed){
   let base = parsed.base
   if (love <= 8){
   if(parsed.base === "SBA")
@@ -129,7 +129,7 @@ if (parsed.base === "SSBA"){
   return base;
 }
 
-function bladeculc(blade,parsed,data){
+function bladecalc(blade,parsed,data){
   let base = parsed.base
   if(data.cmd === true){
   if (blade === 5){
@@ -599,14 +599,14 @@ console.log("lovecount:", lovecount, "type:", typeof lovecount);
   
 
   if (blades !== 0){
-  const bladed = bladeculc(blades,parsed,data);
+  const bladed = bladecalc(blades,parsed,data);
   data = currentMoves[bladed];
   if (!data) continue;
   }
 
 console.log("bladed" ,data.dmg);
 if (loves!== 13){
-  const loved = loveculc(loves,parsed);
+  const loved = lovecalc(loves,parsed);
     data = currentMoves[loved];
   if (!data) continue;
 }
@@ -701,7 +701,7 @@ console.log("blades:", blades, "type:", typeof blades);
   }
 
       const finalDmg = Math.floor(
-        d * scale * techRate * uPenalty * cooltimePenalty * BPbonus + 1e-8
+       scale * Math.floor(d * techRate * uPenalty * cooltimePenalty + 1e-8) * BPbonus + 1e-8
       );
 
       total += finalDmg;
