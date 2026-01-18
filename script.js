@@ -442,13 +442,19 @@ function getOrCreateBPMatrix() {
     // 削除列
     const del = header.insertCell();
     del.textContent = "削除";
-    del.style.display = "none";
+    del.style.display = 
+    document.getElementById("deleteMode").checked
+      ? "table-cell"
+      : "none";
 
     header.insertCell().textContent = "コンボ";
   
     const dec = header.insertCell();
     dec.textContent = "説明";
-    dec.style.display = "none";
+    dec.style.display = 
+    document.getElementById("showDescription").checked
+      ? "table-cell"
+      : "none";
 
     for (let bp = 0; bp <= 3; bp++) {
       header.insertCell().textContent = `BP${bp}`;
@@ -1282,14 +1288,20 @@ function getOrCreateStarterMatrix(starters) {
 // 削除列
 const delTh = header.insertCell();
 delTh.textContent = "削除";
-delTh.style.display = "none";
+delTh.style.display = 
+document.getElementById("deleteMode").checked
+      ? "table-cell"
+      : "none";
 
 header.insertCell().textContent = "初期BP";
 
 header.insertCell().textContent = "コンボ";
 const dec = header.insertCell();
 dec.textContent = "説明";
-dec.style.display = "none";
+dec.style.display = 
+document.getElementById("showDescription").checked
+      ? "table-cell"
+      : "none";
 
 
     for (const s of starters) {
