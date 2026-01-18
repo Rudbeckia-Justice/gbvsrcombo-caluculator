@@ -461,6 +461,20 @@ function getOrCreateBPMatrix() {
   return table;
 }
 
+function recalc(){
+  const bpch =
+  document.getElementById("bpTable")?.checked;
+  const sech =
+  document.getElementById("search")?.checked;
+  if (bpch){
+    recalcBPTable();
+  }else if(sech){
+    recalcTable();
+  }else{
+    return;
+  }
+  
+}
 
 function recalcTable() {
   const table = document.getElementById("starterMatrixTable");
@@ -491,6 +505,8 @@ function recalcTable() {
   }
 
   clearInitialBP();
+
+   highlightMaxDamagePerColumn("bpMatrixTable", 3);
 }
 function recalcBPTable() {
   const table = document.getElementById("bpMatrixTable");
@@ -501,15 +517,21 @@ function recalcBPTable() {
 
     const combo = row.cells[1].textContent;
 
+    // BP0〜3 を再計算
     for (let bp = 0; bp <= 3; bp++) {
-      setBPCheckboxes(bp); // ★ BP固定
-      row.cells[3 + bp].textContent =
+      setBPCheckboxes(bp);
+      row.cells[bp + 3].textContent =
         calcDamage(combo).total;
     }
   }
 
-  highlightMaxDamagePerColumn("bpMatrixTable", 3);
+  // BP強制解除
+  clearInitialBP?.();
+
+  // 最大・2番目再マーキング
+  highlightMaxDamagePerColumn("bpMatrixTable", 2);
 }
+
 
 //最大ダメージマーキング
 function highlightMaxDamagePerColumn(id, scol) {
