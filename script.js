@@ -581,7 +581,10 @@ if (makeBPTable) {
   const delCell = row.insertCell();
   const btn = document.createElement("button");
   btn.textContent = "×";
-  btn.onclick = () => row.remove();
+  btn.onclick = () => {
+    row.remove();
+    highlightMaxDamagePerColumn("bpMatrixTable", 2);
+  }
   delCell.appendChild(btn);
   delCell.style.display =
     document.getElementById("deleteMode").checked
@@ -703,7 +706,10 @@ const initialBP = getInitialBP();
 const delCell = row.insertCell();
 const btn = document.createElement("button");
 btn.textContent = "×";
-btn.onclick = () => row.remove();
+btn.onclick = () => {
+  row.remove();
+  highlightMaxDamagePerColumn("starterMatrixTable", 3);
+}
 delCell.appendChild(btn);
 delCell.style.display =
   document.getElementById("deleteMode").checked
