@@ -12,7 +12,13 @@
   const bpChecked =
     document.getElementById("bpTable")?.checked;
 
-  set.style.display = (starterChecked || bpChecked) ? "block" : "none";
+  const nCheked = 
+   document.getElementById("ncalc")?.checked;
+  
+   const sCheked = 
+   document.getElementById("search")?.checked;
+
+  set.style.display = (starterChecked || bpChecked ||!nCheked && !sCheked) ? "block" : "none";
 }
 
     const input = document.getElementById("combo");
@@ -456,19 +462,16 @@ function recalcTable() {
 }
 
 //最大ダメージマーキング
-function highlightMaxDamagePerColumn(id,scol) {
+function highlightMaxDamagePerColumn(id, scol) {
   const table = document.getElementById(id);
   if (!table) return;
 
   const rowCount = table.rows.length;
   const colCount = table.rows[0].cells.length;
 
-  // 始動列は 3列目以降（0:削除,1:BP,2:combo）
   for (let col = scol; col < colCount; col++) {
-    let max = -Infinity;
     const cells = [];
 
-    // データ行だけ見る（0行目はヘッダ）
     for (let row = 1; row < rowCount; row++) {
       const cell = table.rows[row].cells[col];
       if (!cell) continue;
@@ -476,17 +479,27 @@ function highlightMaxDamagePerColumn(id,scol) {
       const v = Number(cell.textContent);
       if (Number.isNaN(v)) continue;
 
-      cells.push(cell);
-      if (v > max) max = v;
+      cells.push({ cell, value: v });
     }
 
-    // 一旦リセット
-    cells.forEach(c => c.classList.remove("max-damage"));
+    // リセット
+    cells.forEach(o =>
+      o.cell.classList.remove("max-damage", "second-damage")
+    );
 
-    // 最大値に一致するセルを赤く
-    cells.forEach(c => {
-      if (Number(c.textContent) === max) {
-        c.classList.add("max-damage");
+    if (cells.length === 0) continue;
+
+    const uniq = [...new Set(cells.map(o => o.value))]
+      .sort((a, b) => b - a);
+
+    const max = uniq[0];
+    const second = uniq[1];
+
+    cells.forEach(o => {
+      if (o.value === max) {
+        o.cell.classList.add("max-damage");
+      } else if (o.value === second) {
+        o.cell.classList.add("second-damage");
       }
     });
   }
@@ -1274,6 +1287,10 @@ document.getElementById("bladed").style.display = "block";
 });
 
  document.getElementById("bpTable").addEventListener("change", e => {
+  document.getElementById("starterSummaryOptions").style.display =
+    e.target.checked ? "none" : "block";
+});
+ document.getElementById("ncalc").addEventListener("change", e => {
   document.getElementById("starterSummaryOptions").style.display =
     e.target.checked ? "none" : "block";
 });

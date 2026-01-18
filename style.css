@@ -63,6 +63,11 @@ input[type="text"] {
   font-size: 16px;
 }
 
+table {
+  margin: 0 auto;
+}
+
+
 .description {
   max-width: 300px;
   font-size: 14px;
@@ -103,7 +108,10 @@ input[type="text"] {
 color: red;
 font-weight: bold;
 }
-
+.second-damage {
+  color: blue;
+  font-weight: bold;
+}
 
 
 /* キャラ検索＋決定 */

@@ -23,13 +23,17 @@
      <label class="check">
   <input type="checkbox" id="forceTech">
   <span class="quick">クイック入力のみ</span>
+</label><br>
+<label>
+<input type="radio" name="calcmode" id="ncalc" onchange="toggleStarterInput();toggleStarterTableInput();">
+<span>通常計算</span>
 </label>
 <label class="check2">
-  <input type="radio" name ="calcmode" id="search" onchange="toggleStarterInput();toggleStarterTableInput();" >
+ <input type="radio" name ="calcmode" id="search" onchange="toggleStarterInput();toggleStarterTableInput();" >
   <span>始動別ダメージまとめ</span>
 </label>
 <label class="check4">
-  <input type="radio" name ="calcmode" id="bpTable" onchange="toggleStarterTableInput()">
+  <input type="radio" name ="calcmode" id="bpTable" onchange="toggleStarterInput();toggleStarterTableInput();">
   <span>BP別まとめ表</span>
 </label>
 
