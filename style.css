@@ -55,6 +55,16 @@
 .check5 input {
   margin: 0;
   }
+.radio1 {
+  display: inline-flex;     /* 横並び */
+  align-items: center;      /* 縦中央 */
+  gap: 0px;                 /* 距離（小さく） */
+  font-size: 14px;
+  margin-top: 6px;   
+}
+.radio1 input {
+  margin: 0;
+  }
 .calculator {
   width: 400px;
 }
