@@ -25,19 +25,23 @@
   <span class="quick">クイック入力のみ</span>
 </label>
 <label class="check2">
-  <input type="checkbox" id="search" onchange="toggleStarterInput()">
+  <input type="radio" name ="calcmode" id="search" onchange="toggleStarterInput()">
   <span>始動別ダメージまとめ</span>
 </label>
+<label class="check4">
+  <input type="radio" name ="calcmode" id="bpTable" onchange=" toggleStarterTableInput()">
+  <span>BP別まとめ表</span>
+</label>
+
 <label class="check3" id="starterSummaryOptions" style="display:none;">
     <input type="checkbox" id="starterTable" onchange="toggleStarterTableInput()">
     <span>始動表を作成する</span>
     <button id="starterBtn" onclick="clearStarterSummary()">リセット</button>
-    <label id ="starterTableSet" style="display:none"><br>
+   </label>
+   <label class="check5" id ="starterTableSet" style="display:none"><br>
   <input type="checkbox" id="deleteMode">
   コンボ削除モード
   <button onclick="recalcTable()">表再計算</button>
-</label>
-
 </label><br>
 <div id="bpGroup">
  BP<input type="checkbox" data-i="0" checked class="BP" onchange="bpChanged(this)">

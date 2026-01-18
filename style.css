@@ -35,6 +35,26 @@
 .check3 input {
   margin: 0;
   }
+.check4 {
+  display: inline-flex;     /* 横並び */
+  align-items: center;      /* 縦中央 */
+  gap: 0px;                 /* 距離（小さく） */
+  font-size: 14px;
+  margin-top: 6px;   
+}
+.check4 input {
+  margin: 0;
+  }
+.check5 {
+  display: inline-flex;     /* 横並び */
+  align-items: center;      /* 縦中央 */
+  gap: 0px;                 /* 距離（小さく） */
+  font-size: 14px;
+  margin-top: 6px;   
+}
+.check5 input {
+  margin: 0;
+  }
 .calculator {
   width: 400px;
 }
@@ -83,6 +103,7 @@ input[type="text"] {
 color: red;
 font-weight: bold;
 }
+
 
 
 /* キャラ検索＋決定 */

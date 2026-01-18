@@ -6,8 +6,13 @@
 
    function toggleStarterTableInput() {
   const set = document.getElementById("starterTableSet");
-  const checked = document.getElementById("starterTable").checked;
-  set.style.display = checked ? "block" : "none";
+  const starterChecked =
+    document.getElementById("starterTable")?.checked;
+
+  const bpChecked =
+    document.getElementById("bpTable")?.checked;
+
+  set.style.display = (starterChecked || bpChecked) ? "block" : "none";
 }
 
     const input = document.getElementById("combo");
@@ -100,16 +105,20 @@ function getEnabledStarters() {
 
 function updateDeleteColumn() {
   const show = document.getElementById("deleteMode").checked;
-  const table = document.getElementById("starterMatrixTable");
-  if (!table) return;
 
-  [...table.rows].forEach(row => {
-    const cell = row.cells[0];
-    if (cell) {
-      cell.style.display = show ? "table-cell" : "none";
-    }
+  ["starterMatrixTable", "bpMatrixTable"].forEach(id => {
+    const table = document.getElementById(id);
+    if (!table) return;
+
+    [...table.rows].forEach(row => {
+      const cell = row.cells[0];
+      if (cell) {
+        cell.style.display = show ? "table-cell" : "none";
+      }
+    });
   });
 }
+
 
 let tempBP = null;
 
@@ -162,6 +171,14 @@ function bladecalc(blade,parsed,data){
 }
   return base;
 }
+
+function setBPCheckboxes(n) {
+  const boxes = [...document.querySelectorAll(".BP")];
+  boxes.forEach((cb, i) => {
+    cb.checked = i < n;
+  });
+}
+
 
     // ======================
     // 技データ
@@ -378,6 +395,35 @@ function pushWithRepeat(raw, currentMoves, expanded) {
     .filter(s => s.length > 0);
 }
 
+function getOrCreateBPMatrix() {
+  let table = document.getElementById("bpMatrixTable");
+
+  if (!table) {
+    table = document.createElement("table");
+    table.id = "bpMatrixTable";
+    table.border = "1";
+    table.cellPadding = "6";
+    const header = table.insertRow();
+
+    // 削除列
+    const del = header.insertCell();
+    del.textContent = "削除";
+    del.style.display = "none";
+
+    header.insertCell().textContent = "コンボ";
+
+    for (let bp = 0; bp <= 3; bp++) {
+      header.insertCell().textContent = `BP${bp}`;
+    }
+
+    document.getElementById("result").innerHTML = "";
+    document.getElementById("result").appendChild(table);
+  }
+
+  return table;
+}
+
+
 function recalcTable() {
   const table = document.getElementById("starterMatrixTable");
   if (!table) return;
@@ -410,15 +456,15 @@ function recalcTable() {
 }
 
 //最大ダメージマーキング
-function highlightMaxDamagePerColumn() {
-  const table = document.getElementById("starterMatrixTable");
+function highlightMaxDamagePerColumn(id,scol) {
+  const table = document.getElementById(id);
   if (!table) return;
 
   const rowCount = table.rows.length;
   const colCount = table.rows[0].cells.length;
 
   // 始動列は 3列目以降（0:削除,1:BP,2:combo）
-  for (let col = 3; col < colCount; col++) {
+  for (let col = scol; col < colCount; col++) {
     let max = -Infinity;
     const cells = [];
 
@@ -453,8 +499,46 @@ function highlightMaxDamagePerColumn() {
   const searchMode = document.getElementById("search").checked;
   const resultDiv = document.getElementById("result");
   const desc = document.getElementById("description");
+  const makeBPTable =
+  document.getElementById("bpTable")?.checked;
 
   desc.style.display = searchMode ? "none" : "block";
+
+  // BPモード
+if (makeBPTable) {
+
+   
+  const table = getOrCreateBPMatrix();
+  const combo = inputCombo;
+
+  // ★ 1回の計算で1行だけ追加
+  const row = table.insertRow();
+
+  // 削除ボタン
+  const delCell = row.insertCell();
+  const btn = document.createElement("button");
+  btn.textContent = "×";
+  btn.onclick = () => row.remove();
+  delCell.appendChild(btn);
+  delCell.style.display =
+    document.getElementById("deleteMode").checked
+      ? "table-cell"
+      : "none";
+
+  // コンボ表示
+  row.insertCell().textContent = combo;
+
+  // BP0〜3
+  for (let bp = 0; bp <= 3; bp++) {
+    setBPCheckboxes(bp);   // BPを一時的に固定
+    row.insertCell().textContent =
+      calcDamage(combo).total;
+      
+  }
+highlightMaxDamagePerColumn("bpMatrixTable",2)
+  return;
+}
+
 
   // 通常モード
   if (!searchMode) {
@@ -577,7 +661,7 @@ starters.forEach((starter, i) => {
   const full = starter + ">" + inputCombo;
   row.cells[i + 3].textContent = calcDamage(full).total;
 });
-highlightMaxDamagePerColumn()
+highlightMaxDamagePerColumn("starterMatrixTable",3)
 
 }
 
@@ -1022,7 +1106,7 @@ function loadMovesFromCSV(text){
 }
 
 
-//指導まとめ表作成用関数
+//始動まとめ表作成用関数
 function getOrCreateStarterTable() {
   let table = document.getElementById("starterSummaryTable");
 
@@ -1187,6 +1271,11 @@ document.getElementById("bladed").style.display = "block";
   document.getElementById("search").addEventListener("change", e => {
   document.getElementById("starterSummaryOptions").style.display =
     e.target.checked ? "block" : "none";
+});
+
+ document.getElementById("bpTable").addEventListener("change", e => {
+  document.getElementById("starterSummaryOptions").style.display =
+    e.target.checked ? "none" : "block";
 });
 
 document
