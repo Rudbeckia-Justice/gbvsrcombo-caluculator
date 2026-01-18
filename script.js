@@ -478,7 +478,7 @@ function recalcTable() {
     setInitialBP(initialBP);
 
     starters.forEach((starter, i) => {
-      const cell = row.cells[i + 3];
+      const cell = row.cells[i + 4]; // ★ 修正点
 
       if (!enabled.includes(starter)) {
         cell.textContent = "—";
@@ -491,6 +491,24 @@ function recalcTable() {
   }
 
   clearInitialBP();
+}
+function recalcBPTable() {
+  const table = document.getElementById("bpMatrixTable");
+  if (!table) return;
+
+  for (let r = 1; r < table.rows.length; r++) {
+    const row = table.rows[r];
+
+    const combo = row.cells[1].textContent;
+
+    for (let bp = 0; bp <= 3; bp++) {
+      setBPCheckboxes(bp); // ★ BP固定
+      row.cells[3 + bp].textContent =
+        calcDamage(combo).total;
+    }
+  }
+
+  highlightMaxDamagePerColumn("bpMatrixTable", 3);
 }
 
 //最大ダメージマーキング
