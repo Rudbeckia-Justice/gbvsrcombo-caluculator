@@ -17,10 +17,11 @@
   <button id="loadCharBtn">決定</button>
 </div>
 
-      <input type="file" id="csvInput" accept=".csv">
-      <input id="combo" type="text" placeholder="例：!236U*>cMM>623M" />
-      <button onclick="calc()">計算</button>
-     <label class="check">
+<input type="file" id="csvInput" accept=".csv">
+<input id="combo" type="text" placeholder="例：!236U*>cMM>623M" />
+<button onclick="calc()">計算</button>
+<button type="button" onclick="clearSearch()">クリア</button>
+<label class="check">
   <input type="checkbox" id="forceTech">
   <span class="quick">クイック入力のみ</span>
 </label><br>
@@ -42,8 +43,15 @@
     <span>始動表を作成する</span>
    </label>
    <div class="check5" id ="starterTableSet" style="display:none">
-  <input type="checkbox" id="deleteMode">
-  コンボ削除モード
+<label> 
+<input type="checkbox" id="deleteMode">
+コンボ削除モード
+</label>
+  <label>
+  <input type="checkbox" id="showDescription" onchange="toggleDescriptionColumn()">
+  説明
+</label>
+
   <button onclick="recalcTable()">表再計算</button>
   <button id="starterBtn" onclick="clearStarterSummary()">リセット</button>
    </div><br>

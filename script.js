@@ -185,6 +185,34 @@ function setBPCheckboxes(n) {
   });
 }
 
+function clearSearch() {
+  // 検索入力欄を空に
+  const combo = document.getElementById("combo");
+  if (combo) combo.value = "";
+}
+function toggleDescriptionColumn() {
+  const show = document.getElementById("showDescription").checked;
+  const bpch = document.getElementById("bpTable").checked;
+  const stch = document.getElementById("starterTable").checked;
+  const table = document.querySelector("table");
+  if (!table) return;
+  let n;
+if (bpch){
+n = 2;
+}else if (stch){
+n = 3;
+}else{
+  return;
+}
+  [...table.rows].forEach(row => {
+    const cell = row.cells[n]; // ← コンボの横（説明列）
+    if (cell) {
+      cell.style.display = show ? "table-cell" : "none";
+    }
+  });
+}
+
+
 
     // ======================
     // 技データ
@@ -417,6 +445,10 @@ function getOrCreateBPMatrix() {
     del.style.display = "none";
 
     header.insertCell().textContent = "コンボ";
+  
+    const dec = header.insertCell();
+    dec.textContent = "説明";
+    dec.style.display = "none";
 
     for (let bp = 0; bp <= 3; bp++) {
       header.insertCell().textContent = `BP${bp}`;
@@ -541,6 +573,16 @@ if (makeBPTable) {
   // コンボ表示
   row.insertCell().textContent = combo;
 
+  // ★ 説明入力欄
+const descCell = row.insertCell();
+descCell.style.display = "none"; // ★ 最初は非表示
+
+const input = document.createElement("input");
+input.type = "text";
+input.placeholder = "説明を入力";
+
+descCell.appendChild(input);
+
   // BP0〜3
   for (let bp = 0; bp <= 3; bp++) {
     setBPCheckboxes(bp);   // BPを一時的に固定
@@ -655,6 +697,13 @@ row.insertCell().textContent = initialBP;
 
 // コンボセル
 row.insertCell().textContent = inputCombo;
+// ★ 説明入力欄
+const descCell = row.insertCell();
+descCell.style.display = "none"; // ★ 最初は非表示
+const input = document.createElement("input");
+input.type = "text";
+input.placeholder = "説明を入力";
+descCell.appendChild(input);
 
 // 始動セル
 for (let i = 0; i < starters.length; i++) {
@@ -667,12 +716,12 @@ const enabled = getEnabledStarters();
 
 starters.forEach((starter, i) => {
   if (!enabled.includes(starter)) {
-    row.cells[i + 3].textContent = "—";
+    row.cells[i + 4].textContent = "—";
     return;
   }
 
   const full = starter + ">" + inputCombo;
-  row.cells[i + 3].textContent = calcDamage(full).total;
+  row.cells[i + 4].textContent = calcDamage(full).total;
 });
 highlightMaxDamagePerColumn("starterMatrixTable",3)
 
@@ -1183,6 +1232,9 @@ delTh.style.display = "none";
 header.insertCell().textContent = "初期BP";
 
 header.insertCell().textContent = "コンボ";
+const dec = header.insertCell();
+dec.textContent = "説明";
+dec.style.display = "none";
 
 
     for (const s of starters) {
@@ -1306,5 +1358,17 @@ document
   );
   buildCharacterDatalist();
 });
+
+const comboInput = document.getElementById("combo");
+
+comboInput.addEventListener("input", () => {
+  const len = comboInput.value.length;
+  comboInput.setSelectionRange(len, len);
+
+  // 末尾位置を中央に合わせる
+  comboInput.scrollLeft =
+    comboInput.scrollWidth - comboInput.clientWidth / 2;
+});
+
 
 

@@ -5,6 +5,7 @@
   margin: 0 auto;
   justify-content: center;
 }
+
 .check {
   display: inline-flex;     /* 横並び */
   align-items: center;      /* 縦中央 */
@@ -86,7 +87,7 @@ table {
   padding: 12px;
   border-radius: 8px;
   text-align: left;
-  margin-right: 0;
+  margin-left: 60;
 }
 .preview{
   white-space: pre-wrap;        /* 折り返す */
