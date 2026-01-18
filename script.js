@@ -542,6 +542,9 @@ function highlightMaxDamagePerColumn(id, scol) {
   const colCount = table.rows[0].cells.length;
 
   for (let col = scol; col < colCount; col++) {
+
+      // ★ 説明列はスキップ
+    if (table.rows[0].cells[col]?.textContent === "説明") continue;
     const cells = [];
 
     for (let row = 1; row < rowCount; row++) {
@@ -618,7 +621,10 @@ if (makeBPTable) {
 
   // ★ 説明入力欄
 const descCell = row.insertCell();
-descCell.style.display = "none"; // ★ 最初は非表示
+descCell.style.display = 
+document.getElementById("showDescription").checked
+      ? "table-cell"
+      : "none"; // ★ 最初は非表示
 
 const input = document.createElement("input");
 input.type = "text";
@@ -745,7 +751,10 @@ row.insertCell().textContent = initialBP;
 row.insertCell().textContent = inputCombo;
 // ★ 説明入力欄
 const descCell = row.insertCell();
-descCell.style.display = "none"; // ★ 最初は非表示
+descCell.style.display = 
+document.getElementById("showDescription").checked
+      ? "table-cell"
+      : "none";// ★ 最初は非表示
 const input = document.createElement("input");
 input.type = "text";
 input.placeholder = "説明を入力";
