@@ -4,6 +4,12 @@
   box.style.display = checked ? "block" : "none";
 }
 
+   function toggleStarterTableInput() {
+  const set = document.getElementById("starterTableSet");
+  const checked = document.getElementById("starterTable").checked;
+  set.style.display = checked ? "block" : "none";
+}
+
     const input = document.getElementById("combo");
     input.addEventListener("keydown", (e) => {
   if (e.isComposing) return;
@@ -105,10 +111,24 @@ function updateDeleteColumn() {
   });
 }
 
+let tempBP = null;
+
+function setInitialBP(bp) {
+  tempBP = bp;
+}
+
+function clearInitialBP() {
+  tempBP = null;
+}
+
+
 function getInitialBP() {
+  if (tempBP !== null) return tempBP;
+
   return [...document.querySelectorAll(".BP")]
     .filter(cb => cb.checked).length;
 }
+
 
 function lovecalc(love,parsed){
   let base = parsed.base
@@ -358,6 +378,38 @@ function pushWithRepeat(raw, currentMoves, expanded) {
     .filter(s => s.length > 0);
 }
 
+function recalcTable() {
+  const table = document.getElementById("starterMatrixTable");
+  if (!table) return;
+
+  const starters = lockedStarters;
+  const enabled = getEnabledStarters();
+
+  for (let r = 1; r < table.rows.length; r++) {
+    const row = table.rows[r];
+
+    const initialBP = Number(row.cells[1].textContent);
+    const combo = row.cells[2].textContent;
+
+    setInitialBP(initialBP);
+
+    starters.forEach((starter, i) => {
+      const cell = row.cells[i + 3];
+
+      if (!enabled.includes(starter)) {
+        cell.textContent = "—";
+        return;
+      }
+
+      const full = starter + ">" + combo;
+      cell.textContent = calcDamage(full).total;
+    });
+  }
+
+  clearInitialBP();
+}
+
+
     
     function calc() {
   const inputCombo = document.getElementById("combo").value;
@@ -451,15 +503,8 @@ const table = getOrCreateStarterMatrix(starters);
 // すでに同じコンボ行があるか探す
 const initialBP = getInitialBP();
 
-let row = [...table.rows].find(r =>
-  r.cells[1].textContent === String(initialBP) &&
-  r.cells[2].textContent === inputCombo
-);
-
-
-// 無ければ新規行
-if (!row) {
-  row = table.insertRow();
+//新規行
+ let row = table.insertRow();
   // 削除セル
 const delCell = row.insertCell();
 const btn = document.createElement("button");
@@ -482,7 +527,6 @@ for (let i = 0; i < starters.length; i++) {
   row.insertCell();
 }
 
-}
 
 // ダメージを横に埋める
 const enabled = getEnabledStarters();

@@ -29,12 +29,13 @@
   <span>始動別ダメージまとめ</span>
 </label>
 <label class="check3" id="starterSummaryOptions" style="display:none;">
-    <input type="checkbox" id="starterTable">
+    <input type="checkbox" id="starterTable" onchange="toggleStarterTableInput()">
     <span>始動表を作成する</span>
     <button id="starterBtn" onclick="clearStarterSummary()">リセット</button>
-    <label><br>
+    <label id ="starterTableSet" style="display:none"><br>
   <input type="checkbox" id="deleteMode">
   コンボ削除モード
+  <button onclick="recalcTable()">表再計算</button>
 </label>
 
 </label><br>
