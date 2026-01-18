@@ -502,7 +502,7 @@ function highlightMaxDamagePerColumn(id,scol) {
   const makeBPTable =
   document.getElementById("bpTable")?.checked;
 
-  desc.style.display = searchMode ? "none" : "block";
+  desc.style.display = (searchMode||makeBPTable) ? "none" : "block";
 
   // BPモード
 if (makeBPTable) {
