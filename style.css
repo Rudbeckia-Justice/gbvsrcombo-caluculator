@@ -78,6 +78,13 @@ input[type="text"] {
     margin-top: 8px;
   }
 }
+
+.max-damage {
+color: red;
+font-weight: bold;
+}
+
+
 /* キャラ検索＋決定 */
 .chara-select {
   display: flex;

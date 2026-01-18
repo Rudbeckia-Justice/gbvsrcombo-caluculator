@@ -409,6 +409,43 @@ function recalcTable() {
   clearInitialBP();
 }
 
+//最大ダメージマーキング
+function highlightMaxDamagePerColumn() {
+  const table = document.getElementById("starterMatrixTable");
+  if (!table) return;
+
+  const rowCount = table.rows.length;
+  const colCount = table.rows[0].cells.length;
+
+  // 始動列は 3列目以降（0:削除,1:BP,2:combo）
+  for (let col = 3; col < colCount; col++) {
+    let max = -Infinity;
+    const cells = [];
+
+    // データ行だけ見る（0行目はヘッダ）
+    for (let row = 1; row < rowCount; row++) {
+      const cell = table.rows[row].cells[col];
+      if (!cell) continue;
+
+      const v = Number(cell.textContent);
+      if (Number.isNaN(v)) continue;
+
+      cells.push(cell);
+      if (v > max) max = v;
+    }
+
+    // 一旦リセット
+    cells.forEach(c => c.classList.remove("max-damage"));
+
+    // 最大値に一致するセルを赤く
+    cells.forEach(c => {
+      if (Number(c.textContent) === max) {
+        c.classList.add("max-damage");
+      }
+    });
+  }
+}
+
 
     
     function calc() {
@@ -540,6 +577,7 @@ starters.forEach((starter, i) => {
   const full = starter + ">" + inputCombo;
   row.cells[i + 3].textContent = calcDamage(full).total;
 });
+highlightMaxDamagePerColumn()
 
 }
 
