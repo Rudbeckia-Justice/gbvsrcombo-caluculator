@@ -1261,7 +1261,8 @@ const characterMap = [
   "katalina",
   "nier" ,
   "dnier" ,
-  "lucilius"
+  "lucilius",
+  "belial"
     ];
 
     document.getElementById("csvInput").addEventListener("change", (e) => {
@@ -1358,17 +1359,3 @@ document
   );
   buildCharacterDatalist();
 });
-
-const comboInput = document.getElementById("combo");
-
-comboInput.addEventListener("input", () => {
-  const len = comboInput.value.length;
-  comboInput.setSelectionRange(len, len);
-
-  // 末尾位置を中央に合わせる
-  comboInput.scrollLeft =
-    comboInput.scrollWidth - comboInput.clientWidth / 2;
-});
-
-
-
