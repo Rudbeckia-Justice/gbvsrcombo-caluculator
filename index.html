@@ -37,11 +37,11 @@
     <input type="checkbox" id="starterTable" onchange="toggleStarterTableInput()">
     <span>始動表を作成する</span>
    </label>
-   <label class="check5" id ="starterTableSet" style="display:none">
-    <button id="starterBtn" onclick="clearStarterSummary()">リセット</button><br>
+   <label class="check5" id ="starterTableSet" style="display:none"><br>
   <input type="checkbox" id="deleteMode">
   コンボ削除モード
   <button onclick="recalcTable()">表再計算</button>
+  <button id="starterBtn" onclick="clearStarterSummary()">リセット</button>
 </label><br>
 <div id="bpGroup">
  BP<input type="checkbox" data-i="0" checked class="BP" onchange="bpChanged(this)">
